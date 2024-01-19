@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rivne.booking.api", "rivne.booking.api.csproj", "{90972DF2-708C-461B-BEB9-35FA0E2DD8DB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C} = {910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}
+		{B7CB07C7-8132-4F77-86D3-2987594CC8AA} = {B7CB07C7-8132-4F77-86D3-2987594CC8AA}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rivne.booking.Core", "..\rivne.booking.Core\rivne.booking.Core.csproj", "{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rivne.booking.Infrastructure", "..\rivne.booking.Infrastructure\rivne.booking.Infrastructure.csproj", "{B7CB07C7-8132-4F77-86D3-2987594CC8AA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C} = {910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90972DF2-708C-461B-BEB9-35FA0E2DD8DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90972DF2-708C-461B-BEB9-35FA0E2DD8DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90972DF2-708C-461B-BEB9-35FA0E2DD8DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90972DF2-708C-461B-BEB9-35FA0E2DD8DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7CB07C7-8132-4F77-86D3-2987594CC8AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7CB07C7-8132-4F77-86D3-2987594CC8AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7CB07C7-8132-4F77-86D3-2987594CC8AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7CB07C7-8132-4F77-86D3-2987594CC8AA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ECF869C3-0AFE-4D92-AFDF-F665B31608D4}
+	EndGlobalSection
+EndGlobal
