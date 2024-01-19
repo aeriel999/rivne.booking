@@ -1,18 +1,25 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-
 import ECommerce from './pages/Dashboard/ECommerce';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
 import Loader from './common/Loader';
 import routes from './routes';
+import Users from './pages/users';
+import AddUser from './pages/users/create';
+import Apartments from './pages/apartments';
+import AddApartment from './pages/apartments/create';
+import { useTypedSelector } from './hooks/useTypedSelector.ts';
+import DefaultLayout from './layout/DefaultLayout'
 
-const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
+
+
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
-
+  const { isAuth } = useTypedSelector((store) => store.UserReducer);
+console.log("auth", isAuth)
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
@@ -27,25 +34,38 @@ function App() {
         containerClassName="overflow-auto"
       />
       <Routes>
-        <Route path="/auth/signin" element={<SignIn />} />
-        <Route path="/auth/signup" element={<SignUp />} />
-        <Route element={<DefaultLayout />}>
-          <Route index element={<ECommerce />} />
-          {routes.map((routes, index) => {
-            const { path, component: Component } = routes;
-            return (
-              <Route
-                key={index}
-                path={path}
-                element={
-                  <Suspense fallback={<Loader />}>
-                    <Component />
-                  </Suspense>
-                }
-              />
-            );
-          })}
-        </Route>
+
+        {isAuth && (
+          <>
+            ((
+            <Route  element={<DefaultLayout />}>
+              <Route path="/dashboard" element={<ECommerce />} />
+              <Route path="/dashboard/users" element={<Users />} />
+              <Route path="/dashboard/adduser" element={<AddUser />} />
+              <Route path="/dashboard/apartments" element={<Apartments />} />
+              <Route path="/dashboard/addapartment" element={<AddApartment />} />
+              {routes.map((routes, index) => {
+                const { path, component: Component } = routes;
+                return (
+                  <Route
+                    key={index}
+                    path={path}
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <Component />
+                      </Suspense>
+                    }
+                  />
+                );
+              })}
+            </Route>
+            ))
+          </>
+        )}
+
+        <Route path="/" element={<SignIn />} />
+        <Route path="/dashboard" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </>
   );
