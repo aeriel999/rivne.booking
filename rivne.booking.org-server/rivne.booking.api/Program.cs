@@ -113,6 +113,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//await ApiUsersInitializer.SeedPasswordsAndRoles(app);
+ApiUsersInitializer.SeedData(app);
 
 app.Run();

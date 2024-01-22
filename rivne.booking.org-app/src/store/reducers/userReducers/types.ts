@@ -18,6 +18,8 @@ export enum UserActionTypes {
     SERVER_ERROR = "SERVER_ERROR ",
     LOGOUT_USER_SUCCESS = "LOGOUT_USER_SUCCESS",
     LOGOUT_USER_ERROR = "LOGOUT_USER_ERROR",
+    UPDATE_USER_PROFILE_SUCCESS = "UPDATE_USER_PROFILE_SUCCESS",
+    UPDATE_USER_PROFILE_ERROR = " UPDATE_USER_PROFILE_ERROR",
     GET_ALL_USERS_SUCCESS = "GET_ALL_USERS_SUCCESS",
     GET_ALL_USERS_ERROR = "GET_ALL_USERS_ERROR",
     ADD_USER_SUCCESS = "ADD_USER_SUCCESS",
@@ -62,6 +64,16 @@ interface LogoutUserSuccessAction {
 
 interface LogoutUserErrorAction {
     type: UserActionTypes.LOGOUT_USER_ERROR;
+    payload: any;
+}
+
+interface UpdateUserProfileSuccessAction {
+    type: UserActionTypes.UPDATE_USER_PROFILE_SUCCESS;
+    payload: any;
+}
+
+interface UpdateUserProfileErrorAction {
+    type: UserActionTypes.UPDATE_USER_PROFILE_ERROR;
     payload: any;
 }
 
@@ -144,4 +156,6 @@ export type UserActions =
     |DeleteUserSuccessAction
     |DeleteUserErrorAction
     |ChangePasswordSuccessAction
-    |ChangePasswordErrorAction;
+    |ChangePasswordErrorAction
+    |UpdateUserProfileSuccessAction
+    |UpdateUserProfileErrorAction;

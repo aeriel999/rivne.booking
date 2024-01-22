@@ -1,6 +1,6 @@
 import axios from "axios";
 import http_common from '../../htt_common.ts';
-import { ILogin } from '../../interfaces/user';
+import { ILogin, IProfileUser } from '../../interfaces/user';
 
 http_common.interceptors.request.use(
   (config: any) => {
@@ -82,14 +82,12 @@ http_common.interceptors.response.use(
 // };
 
 export async function login(model: ILogin) {
-
   try {
     const data = await http_common.post("/api/User/login", model, {
       headers: {
         "Content-Type": "application/json"
       }
     });
-
     return data;
   } catch (error: any) {
     return error.response.data.message;
@@ -121,47 +119,66 @@ export function getRefreshToken(): null | string {
   return token;
 }
 
-// export async function login(user: any) {
-//   const data = await User.login(user)
-//     .then((response) => {
-//       return {
-//         response,
-//       };
-//     })
-//     .catch((error) => {
-//       return error.response;
-//     });
-//   return data;
-// }
-//
-// export async function logout(userId: string) {
-//   const data = await User.logout(userId)
-//     .then((response) => {
-//       return {
-//         response,
-//       };
-//     })
-//     .catch((error) => {
-//       return error.response;
-//     });
-//
-//   return data;
-// }
-//
-// export async function getAll() {
-//   const data = await User.getAll()
-//     .then((response) => {
-//       return {
-//         response,
-//       };
-//     })
-//     .catch((error) => {
-//       return error.response;
-//     });
-//
-//   return data;
-// }
-//
+export async function logout(userId: string) {
+  try {
+    const data = await http_common.get("/api/User/logout?userId=" + userId, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    return data;
+  } catch (error: any) {
+    return error.response.data.message;
+  }
+}
+
+export function removeTokens() {
+  window.localStorage.removeItem("accessToken");
+  window.localStorage.removeItem("refreshToken");
+}
+
+export async function updateUserProfile(model: IProfileUser) {
+  try {
+    const data = await http_common.post("/api/User/updateProfile", model, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    return data;
+  } catch (error: any) {
+    return error.response.data.message;
+  }
+}
+
+export async function getAll() {
+  try {
+    const data = await http_common.get("/api/User/getAll", {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    return data;
+  } catch (error: any) {
+    return error.response.data.message;
+  }
+}
+
+export async function deleteUser(userId: string) {
+  try {
+    const data = await http_common.post("/api/User/deleteUser", userId, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    return data;
+  } catch (error: any) {
+    return error.response.data.message;
+  }
+
+}
+
+
+
 // export async function addUser(user: any) {
 //   const data = await User.addUser(user)
 //     .then((response) => {
@@ -233,7 +250,4 @@ export function getRefreshToken(): null | string {
 
 
 
-export function removeTokens() {
-  window.localStorage.removeItem("accessToken");
-  window.localStorage.removeItem("refreshToken");
-}
+

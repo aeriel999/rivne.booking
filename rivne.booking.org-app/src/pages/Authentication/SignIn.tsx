@@ -25,8 +25,6 @@ const SignIn = () => {
           };
 
       LoginUser(user);
-
-     // navigate("/dashboard");
     };
 
 

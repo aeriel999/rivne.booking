@@ -70,11 +70,12 @@ public class JwtServise : IJwtTokenService
 			Subject = new ClaimsIdentity(new[]
 			{
 				new Claim("Id", user.Id),
-				new Claim("Name", user.FirstName ?? ""),
-				new Claim("LAstname", user.LastName ?? ""),
+				new Claim("Firstname", user.FirstName ?? ""),
+				new Claim("Lastname", user.LastName ?? ""),
 				new Claim("Email", user.Email),
 				new Claim("EmailConfirm", user.EmailConfirmed.ToString()),
 				new Claim("PhoneNumber", user.PhoneNumber ?? ""),
+				new Claim("Avatar", user.Avatar ?? ""),
 				new Claim(ClaimsIdentity.DefaultRoleClaimType, roles[0]),
 				new Claim(JwtRegisteredClaimNames.Aud, _configuration["JwtConfig:Audience"]),
 				new Claim(JwtRegisteredClaimNames.Iss, _configuration["JwtConfig:Issuer"]),

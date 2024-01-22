@@ -18,7 +18,7 @@ public class ApiDbContext : IdentityDbContext
 	{
 		base.OnModelCreating(builder);
 
-		builder.SeedUsers();
-		builder.SeedRoles();
+		//builder.SeedUsers();
+		//builder.SeedRoles();
 	}
 }

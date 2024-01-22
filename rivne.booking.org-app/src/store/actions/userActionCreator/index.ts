@@ -2,21 +2,23 @@ import { UserActionTypes, UserActions } from "../../reducers/userReducers/types.
 //import services
 import {
     login,
-    // logout,
-    // getAll,
-    // addUser,
+     logout,
     setAccessToken,
     setRefreshToken,
-   // removeTokens,
+    removeTokens,
+    updateUserProfile,
+    getAll,
+    deleteUser,
+    // addUser,
     // getUser,
     // editUser,
-    // deleteUser,
+
     // changePassword,
 } from "../../../services/userServices";
 import { Dispatch } from "redux";
 import { toast } from "react-toastify";
 import jwtDecode from "jwt-decode";
-import { ILogin } from '../../../interfaces/user';
+import { ILogin, IProfileUser } from '../../../interfaces/user';
 
 export const LoginUser = (user: ILogin) => {
     return async (dispatch: Dispatch<UserActions>) => {
@@ -66,56 +68,116 @@ export const AuthUther = (
     });
 };
 
-// export const LogOut = (id: string) => {
-//     return async (dispatch: Dispatch<UserActions>) => {
-//         const data = await logout(id);
-//         const { response } = data;
-//
-//         if (response.success) {
-//             removeTokens();
-//             dispatch({
-//                 type: UserActionTypes.LOGOUT_USER_SUCCESS,
-//                 payload: response.message,
-//             });
-//         } else {
-//             dispatch({
-//                 type: UserActionTypes.LOGOUT_USER_ERROR,
-//                 payload: response.message,
-//             });
-//         }
-//     };
-// };
-//
-// export const GetAll = () => {
-//     return async (dispatch: Dispatch<UserActions>) => {
-//         try {
-//             dispatch({ type: UserActionTypes.START_REQUEST });
-//
-//             const data = await getAll();
-//
-//             const { response } = data;
-//
-//             if (response.success) {
-//                 dispatch({
-//                     type: UserActionTypes.GET_ALL_USERS_SUCCESS,
-//                     payload: { allUsers: response.payLoad },
-//                 });
-//             } else {
-//                 dispatch({
-//                     type: UserActionTypes.GET_ALL_USERS_ERROR,
-//                     payload: response.message,
-//                 });
-//             }
-//         } catch (error) {
-//             dispatch({
-//                 type: UserActionTypes.SERVER_ERROR,
-//                 payload: "Unknown error",
-//             });
-//             toast.error("Unknown get error");
-//         }
-//     };
-// };
-//
+export const LogOut = (id: string) => {
+    console.log("user.id", id)
+    return async (dispatch: Dispatch<UserActions>) => {
+        const data = await logout(id);
+
+        if (data.data.success) {
+            removeTokens();
+            dispatch({
+                type: UserActionTypes.LOGOUT_USER_SUCCESS,
+                payload: data.data.message,
+            });
+        } else {
+            dispatch({
+                type: UserActionTypes.LOGOUT_USER_ERROR,
+                payload: data.data.message,
+            });
+        }
+    };
+};
+
+export const UpdateUserProfile = (model: IProfileUser) =>{
+    return async (dispatch: Dispatch<UserActions>) => {
+        try {
+            dispatch({ type: UserActionTypes.START_REQUEST });
+
+            const data = await updateUserProfile(model);
+
+            if (!data.data.success) {
+                dispatch({
+                    type: UserActionTypes.UPDATE_USER_PROFILE_ERROR,
+                    payload: data.data.message,
+                });
+               // toast.error(response.message);
+            } else {
+                dispatch({
+                    type: UserActionTypes.UPDATE_USER_PROFILE_SUCCESS,
+                    payload: data.data.message,
+                  //  payload: {user : data.data.payLoad},
+                });
+               // toast.success(response.message);
+            }
+        } catch (e) {
+            dispatch({
+                type: UserActionTypes.SERVER_ERROR,
+                payload: "Unknown error",
+            });
+          //  toast.error("Unknown edit error");
+        }
+    };
+};
+
+export const GetAll = () => {
+    return async (dispatch: Dispatch<UserActions>) => {
+        try {
+            dispatch({ type: UserActionTypes.START_REQUEST });
+
+            const data = await getAll();
+            console.log("data.data.payLoad", data.data.payLoad);
+            if (data.data.success) {
+                dispatch({
+                    type: UserActionTypes.GET_ALL_USERS_SUCCESS,
+                    payload: data.data.payLoad ,
+                });
+            } else {
+                dispatch({
+                    type: UserActionTypes.GET_ALL_USERS_ERROR,
+                    payload: data.data.message,
+                });
+            }
+        } catch (error) {
+            dispatch({
+                type: UserActionTypes.SERVER_ERROR,
+                payload: "Unknown error",
+            });
+           // toast.error("Unknown get error");
+        }
+    };
+};
+
+export const DeleteUser = (userId: string) => {
+    return async (dispatch: Dispatch<UserActions>) => {
+        try {
+            dispatch({ type: UserActionTypes.START_REQUEST });
+
+            const data = await deleteUser(userId);
+
+            if (!data.data.success) {
+                dispatch({
+                    type: UserActionTypes.DELETE_USER_ERROR,
+                    payload: data.data.message,
+                });
+                //toast.error(data.data.message);
+            } else {
+                dispatch({
+                    type: UserActionTypes.DELETE_USER_SUCCESS,
+                    payload: data.data.payLoad,
+                });
+
+               // toast.success(data.data.message);
+            }
+        } catch (e) {
+            dispatch({
+                type: UserActionTypes.SERVER_ERROR,
+                payload: "Unknown error",
+            });
+            //toast.error("Unknown delete error");
+        }
+    };
+};
+
 // export const AddUser = (user: any) => {
 //     return async (dispatch: Dispatch<UserActions>) => {
 //         try {
@@ -214,38 +276,7 @@ export const AuthUther = (
 //     };
 // };
 //
-// export const DeleteUser = (userId: string) => {
-//     return async (dispatch: Dispatch<UserActions>) => {
-//         try {
-//             dispatch({ type: UserActionTypes.START_REQUEST });
-//
-//             const data = await deleteUser(userId);
-//
-//             const { response } = data;
-//
-//             if (!response.success) {
-//                 dispatch({
-//                     type: UserActionTypes.DELETE_USER_ERROR,
-//                     payload: response.message,
-//                 });
-//                 toast.error(response.message);
-//             } else {
-//                 dispatch({
-//                     type: UserActionTypes.DELETE_USER_SUCCESS,
-//                     payload: response.payLoad,
-//                 });
-//
-//                 toast.success(response.message);
-//             }
-//         } catch (e) {
-//             dispatch({
-//                 type: UserActionTypes.SERVER_ERROR,
-//                 payload: "Unknown error",
-//             });
-//             toast.error("Unknown delete error");
-//         }
-//     };
-// };
+
 //
 // export const ChangePassword = (passModel: any) => {
 //     return async (dispatch: Dispatch<UserActions>) => {

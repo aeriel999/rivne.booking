@@ -4,80 +4,71 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using rivne.booking.Core.Entities.Users;
 using rivne.booking.Infrastructure.Context;
+using System.Data;
+using System;
 
 
 namespace rivne.booking.Infrastructure.Initializers;
 public static class ApiUsersInitializer
 {
-	public static void SeedUsers(this ModelBuilder modelBuilder)
+	public static class Roles
 	{
-		modelBuilder.Entity<User>().HasData(new User[]
-			{
-				new User
-				{
-					FirstName = "Bob",
-					UserName = "admin@email.com",
-					Email = "admin@email.com",
-					NormalizedEmail = "admin@email.com".ToUpperInvariant(),
-					EmailConfirmed = true,
-					PhoneNumber = "+xx(xxx)xxx-xx-xx",
-					PhoneNumberConfirmed = true,
-					 
-				},
-				new User
-				{
-					FirstName = "Alice",
-					 UserName = "user1@email.com",
-					Email = "user1@email.com",
-					NormalizedEmail = "user1@email.com".ToUpperInvariant(),
-					EmailConfirmed = true,
-					PhoneNumber = "+xx(xxx)xxx-xx-xx",
-					PhoneNumberConfirmed = true
-				}
-		});
-	}
-
-	public static void SeedRoles(this ModelBuilder modelBuilder)
-	{
-		modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole[]
-			{
-				 new IdentityRole()
-					{
-						Name = "Administrator",
-						NormalizedName = "ADMINISTRATOR",
-					},
-					new IdentityRole()
-					{
-						Name = "User",
-						NormalizedName = "USER"
-					}
-			});
-	}
-
-	public static async Task SeedPasswordsAndRoles(IApplicationBuilder applicationBuilder)
-	{
-		using (var serviseScope = applicationBuilder.ApplicationServices.CreateScope())
+		public static List<string> All = new()
 		{
-			var context = serviseScope.ServiceProvider.GetService<ApiDbContext>();
+			Admin,
+			User
+		};
+		public const string Admin = "Admin";
+		public const string User = "User";
+	}
+	public static void SeedData(this IApplicationBuilder app)
+	{
+		using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+		{
+			var service = scope.ServiceProvider;
+			//Отримую посилання на наш контекст
+			var context = service.GetRequiredService<ApiDbContext>();
 
-			UserManager<User> userManager = serviseScope.ServiceProvider.GetRequiredService<UserManager<User>>();
+			context.Database.Migrate();
 
-			var admin = await userManager.FindByEmailAsync("admin@email.com");
-			var user = await userManager.FindByEmailAsync("user1@email.com");
+			var userManager = scope.ServiceProvider
+				.GetRequiredService<UserManager<User>>();
 
-			IdentityResult adminResult = userManager.AddPasswordAsync(admin, "Admin+1111").Result;
+			var roleManager = scope.ServiceProvider
+				.GetRequiredService<RoleManager<IdentityRole>>();
 
-			IdentityResult user1Result = userManager.AddPasswordAsync(user, "User+1111").Result;
 
-				if (adminResult.Succeeded)
+			#region Add users and roles
+
+			if (!context.Roles.Any())
+			{
+				foreach (var role in Roles.All)
 				{
-					userManager.AddToRoleAsync(admin, "Administrator").Wait();
+					var result = roleManager.CreateAsync(new IdentityRole
+					{
+						Name = role
+					}).Result;
 				}
-				if (user1Result.Succeeded)
+			}
+
+			if (!context.Users.Any())
+			{
+				var user = new User
 				{
-					userManager.AddToRoleAsync(user, "User").Wait();
+					FirstName = "Jone",
+					LastName = "Dou",
+					Email = "admin@email.com",
+					UserName = "admin@email.com",
+					EmailConfirmed = true,
+				};
+				var result = userManager.CreateAsync(user, "Admin+1111").Result;
+				if (result.Succeeded)
+				{
+					result = userManager.AddToRoleAsync(user, Roles.Admin).Result;
 				}
-			 
+			}
+
+			#endregion
 		}
 	}
 }

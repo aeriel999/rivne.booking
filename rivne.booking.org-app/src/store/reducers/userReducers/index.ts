@@ -44,11 +44,25 @@ const UserReducer = (state = initialState, action: UserActions): UserState => {
                 loading: false,
                 message: action.payload.message,
             };
+        case UserActionTypes.UPDATE_USER_PROFILE_SUCCESS:
+
+            return {
+
+                ...state,
+                loading: false,
+                user: action.payload,
+            };
+        case UserActionTypes.UPDATE_USER_PROFILE_ERROR:
+            return {
+                ...state,
+                loading: false,
+                message: action.payload.message,
+            };
         case UserActionTypes.GET_ALL_USERS_SUCCESS:
             return {
                 ...state,
                 loading: false,
-                allUsers: action.payload.allUsers,
+                allUsers: action.payload,
             };
         case UserActionTypes.GET_ALL_USERS_ERROR:
             return {

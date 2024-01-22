@@ -14,7 +14,9 @@ public static class ServiceExtensions
 	{
 		services.AddDbContext<ApiDbContext>(opt =>
 		{
-			opt.UseSqlServer(connectionString);
+			//opt.UseSqlServer(connectionString);
+			opt.UseNpgsql(connectionString);
+
 			opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 		});
 	}
