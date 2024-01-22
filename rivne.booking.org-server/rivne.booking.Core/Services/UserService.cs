@@ -280,6 +280,33 @@ public class UserService
 		}
 	}
 
+	public async Task<ServiceResponse> GetUser(string userID)
+	{
+		var user = await _userManager.FindByIdAsync(userID);
+
+		if (user == null)
+		{
+			return new ServiceResponse
+			{
+				Success = false,
+				Message = "User is not found",
+			};
+		}
+		else
+		{
+			var mappedUser = _mapper.Map<User, EditUserDto>(user);
+
+			mappedUser.Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault()!;
+
+			return new ServiceResponse
+			{
+				Success = true,
+				Message = "User is loaded",
+				PayLoad = mappedUser
+			};
+		}
+	}
+
 	public async Task<ServiceResponse> Edit(EditUserDto model)
 	{
 		var user = await _userManager.FindByIdAsync(model.Id);

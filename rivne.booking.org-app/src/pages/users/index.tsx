@@ -1,11 +1,11 @@
 import { BsFillPencilFill, BsFillTrashFill } from 'react-icons/bs';
-
 import { useActions } from '../../hooks/useActions.ts';
 import { useEffect, useState } from 'react';
 import { useTypedSelector } from '../../hooks/useTypedSelector.ts';
 import { IUser } from '../../interfaces/user';
 import DeleteUserModal from '../../components/ModalDelete.tsx';
 import DefaultAvatar from '../../images/user/default-avatar.png';
+import { useNavigate } from 'react-router-dom';
 
 const Users: React.FC = () =>  {
   const { GetAll, DeleteUser } = useActions();
@@ -14,6 +14,7 @@ const Users: React.FC = () =>  {
   const [data, setData] = useState<IUser[]>([]);
   // @ts-ignore
   const BASE_URL: string = import.meta.env.VITE_API_URL as string;
+  const navigate = useNavigate();
 
   useEffect(() => {
     GetAll();
@@ -55,8 +56,11 @@ const Users: React.FC = () =>  {
   };
 
   // Function to edit a row
-  const editRow = (model : any) => {
-    // Implement your edit logic
+  const editRow = (userId: any) => {
+
+    navigate(`/dashboard/users/edit?id=${12}`);
+    //navigate(`/dashboard/users/edit/`);
+
   };
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -138,7 +142,7 @@ const Users: React.FC = () =>  {
         />
         <BsFillPencilFill
           className="edit-btn cursor-pointer"
-          onClick={() => editRow(row)}
+          onClick={() => editRow(row.id)}
         />
       </span>
                 </td>

@@ -10,8 +10,8 @@ import {
     getAll,
     deleteUser,
     // addUser,
-    // getUser,
-    // editUser,
+    getUser,
+    editUser,
 
     // changePassword,
 } from "../../../services/userServices";
@@ -178,6 +178,70 @@ export const DeleteUser = (userId: string) => {
     };
 };
 
+export const GetUser = (userId: string) => {
+
+    return async (dispatch: Dispatch<UserActions>) => {
+        console.log("GetUser");
+        try {
+            dispatch({ type: UserActionTypes.START_REQUEST });
+
+            const data = await getUser(userId);
+
+            if (!data.data.success) {
+                dispatch({
+                    type: UserActionTypes.GET_USER_ERROR,
+                    payload: data.data.message,
+                });
+               // toast.error(response.message);
+            } else {
+                dispatch({
+                    type: UserActionTypes.GET_USER_SUCCESS,
+                    payload: data.data.payLoad,
+                });
+
+               // toast.success(response.message);
+            }
+        } catch (e) {
+            dispatch({
+                type: UserActionTypes.SERVER_ERROR,
+                payload: "Unknown error",
+            });
+         //   toast.error("Unknown user error");
+        }
+    };
+};
+
+export const EditUser = (user: any) => {
+    return async (dispatch: Dispatch<UserActions>) => {
+        try {
+            dispatch({ type: UserActionTypes.START_REQUEST });
+
+            const data = await editUser(user);
+
+            if (!data.data.success) {
+                dispatch({
+                    type: UserActionTypes.EDIT_USER_ERROR,
+                    payload: data.data.message,
+                });
+                //toast.error(response.message);
+            } else {
+                dispatch({
+                    type: UserActionTypes.EDIT_USER_SUCCESS,
+                    payload: data.data.message,
+                });
+               // toast.success(response.message);
+            }
+        } catch (e) {
+            dispatch({
+                type: UserActionTypes.SERVER_ERROR,
+                payload: "Unknown error",
+            });
+            //toast.error("Unknown edit error");
+        }
+    };
+};
+
+
 // export const AddUser = (user: any) => {
 //     return async (dispatch: Dispatch<UserActions>) => {
 //         try {
@@ -211,71 +275,9 @@ export const DeleteUser = (userId: string) => {
 //     };
 // };
 //
-// export const GetUser = (userId: string) => {
-//     return async (dispatch: Dispatch<UserActions>) => {
-//         try {
-//             dispatch({ type: UserActionTypes.START_REQUEST });
+
 //
-//             const data = await getUser(userId);
-//
-//             const { response } = data;
-//
-//             if (!response.success) {
-//                 dispatch({
-//                     type: UserActionTypes.GET_USER_ERROR,
-//                     payload: response.message,
-//                 });
-//                 toast.error(response.message);
-//             } else {
-//                 dispatch({
-//                     type: UserActionTypes.GET_USER_SUCCESS,
-//                     payload: response.payLoad,
-//                 });
-//
-//                 toast.success(response.message);
-//             }
-//         } catch (e) {
-//             dispatch({
-//                 type: UserActionTypes.SERVER_ERROR,
-//                 payload: "Unknown error",
-//             });
-//             toast.error("Unknown user error");
-//         }
-//     };
-// };
-//
-// export const EditUser = (user: any) => {
-//     return async (dispatch: Dispatch<UserActions>) => {
-//         try {
-//             dispatch({ type: UserActionTypes.START_REQUEST });
-//
-//             const data = await editUser(user);
-//
-//             const { response } = data;
-//
-//             if (!response.success) {
-//                 dispatch({
-//                     type: UserActionTypes.EDIT_USER_ERROR,
-//                     payload: response.message,
-//                 });
-//                 toast.error(response.message);
-//             } else {
-//                 dispatch({
-//                     type: UserActionTypes.EDIT_USER_SUCCESS,
-//                     payload: response.message,
-//                 });
-//                 toast.success(response.message);
-//             }
-//         } catch (e) {
-//             dispatch({
-//                 type: UserActionTypes.SERVER_ERROR,
-//                 payload: "Unknown error",
-//             });
-//             toast.error("Unknown edit error");
-//         }
-//     };
-// };
-//
+
 
 //
 // export const ChangePassword = (passModel: any) => {

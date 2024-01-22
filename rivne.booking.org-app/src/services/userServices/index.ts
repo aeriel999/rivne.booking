@@ -177,6 +177,34 @@ export async function deleteUser(userId: string) {
 
 }
 
+export async function getUser(userId: string) {
+  try {
+    const data = await http_common.get("/api/User/getUser?userId=" + userId,{
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    return data;
+  } catch (error: any) {
+    return error.response.data.message;
+  }
+}
+
+export async function editUser(user: any) {
+  try {
+    const data = await http_common.post("/api/User/editUser", user, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    return data;
+  } catch (error: any) {
+    return error.response.data.message;
+  }
+
+}
+
+
 
 
 // export async function addUser(user: any) {

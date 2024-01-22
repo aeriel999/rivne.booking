@@ -103,6 +103,18 @@ public class UserController : Controller
 		else return BadRequest(result.Message);
 	}
 
+	[HttpGet("getUser")]
+	public async Task<IActionResult> GetUser(string userID)
+	{
+		var result = await _userService.GetUser(userID);
+
+		if (result.Success)
+		{
+			return Ok(result);
+		}
+		return BadRequest(result);
+	}
+
 	[HttpPost("editUser")]
 	public async Task<IActionResult> EditUser(EditUserDto model)
 	{
@@ -112,15 +124,15 @@ public class UserController : Controller
 
 		if (result.IsValid)
 		{
-			var newUser = await _userService.Edit(model);
+			var editResult = await _userService.Edit(model);
 
-			if (newUser.Success)
+			if (editResult.Success)
 			{
-				return Ok(newUser);
+				return Ok(editResult);
 			}
 			else
 			{
-				return BadRequest(newUser);
+				return BadRequest(editResult);
 			}
 		}
 		else
