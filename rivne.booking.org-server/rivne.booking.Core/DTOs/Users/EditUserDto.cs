@@ -15,5 +15,6 @@ public class EditUserDto
 	public string PhoneNumber { get; set; } = string.Empty;
 	public bool PhoneNumberConfirmed { get; set; }
 	public string Role { get; set; } = string.Empty;
-	public string LockedEnd { get; set; } = string.Empty;
+	public bool LockoutEnabled { get; set; }
+	public List<string> Roles { get; set;} = new List<string>();
 }

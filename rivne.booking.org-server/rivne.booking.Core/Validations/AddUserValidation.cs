@@ -7,14 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rivne.booking.Core.Validations;
-public class EditUserValidation : AbstractValidator<EditUserDto>
+public class AddUserValidation : AbstractValidator<AddUserDto>
 {
-    public EditUserValidation()
+    public AddUserValidation()
     {
+		RuleFor(r => r.Email).NotEmpty().WithMessage("Field must not be empty").EmailAddress().WithMessage("Wrong email format");
+
 		RuleFor(r => r.Role).NotEmpty().WithMessage("Field must not be empty");
 
-		RuleFor(r => r.Email).NotEmpty().WithMessage("Field must not be empty").EmailAddress().WithMessage("Wrong email format");
-		
 		When(r => !string.IsNullOrEmpty(r.FirstName), () =>
 		{
 			RuleFor(r => r.FirstName)
@@ -32,5 +32,9 @@ public class EditUserValidation : AbstractValidator<EditUserDto>
 			RuleFor(r => r.PhoneNumber)
 				.MinimumLength(11).WithMessage("Phone number must have at least 11 symbols");
 		});
+
+		RuleFor(r => r.Password).NotEmpty().WithMessage("Field must not be empty").MinimumLength(6).WithMessage("Password must be at least 6 characters");
+		
+		RuleFor(r => r.ConfirmPassword).NotEmpty().WithMessage("Required field must not be empty.").MinimumLength(6).Equal(r => r.Password).WithMessage("Passwords are not matched");
 	}
 }

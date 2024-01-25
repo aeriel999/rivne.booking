@@ -9,7 +9,7 @@ import {
     updateUserProfile,
     getAll,
     deleteUser,
-    // addUser,
+    addUser,
     getUser,
     editUser,
 
@@ -181,7 +181,7 @@ export const DeleteUser = (userId: string) => {
 export const GetUser = (userId: string) => {
 
     return async (dispatch: Dispatch<UserActions>) => {
-        console.log("GetUser");
+        console.log("GetUser", userId);
         try {
             dispatch({ type: UserActionTypes.START_REQUEST });
 
@@ -197,8 +197,9 @@ export const GetUser = (userId: string) => {
                 dispatch({
                     type: UserActionTypes.GET_USER_SUCCESS,
                     payload: data.data.payLoad,
-                });
 
+                });
+                console.log("try", data.data.payLoad);
                // toast.success(response.message);
             }
         } catch (e) {
@@ -241,40 +242,37 @@ export const EditUser = (user: any) => {
     };
 };
 
+export const AddUser = (user: any) => {
+    return async (dispatch: Dispatch<UserActions>) => {
+        try {
+            dispatch({ type: UserActionTypes.START_REQUEST });
 
-// export const AddUser = (user: any) => {
-//     return async (dispatch: Dispatch<UserActions>) => {
-//         try {
-//             dispatch({ type: UserActionTypes.START_REQUEST });
-//
-//             const data = await addUser(user);
-//
-//             const { response } = data;
-//
-//             if (!response.success) {
-//                 dispatch({
-//                     type: UserActionTypes.ADD_USER_ERROR,
-//                     payload: response.message,
-//                 });
-//                 toast.error(response.message);
-//             } else {
-//                 dispatch({
-//                     type: UserActionTypes.ADD_USER_SUCCESS,
-//                     payload: response.message,
-//                 });
-//
-//                 toast.success(response.message);
-//             }
-//         } catch (e) {
-//             dispatch({
-//                 type: UserActionTypes.SERVER_ERROR,
-//                 payload: "Unknown error",
-//             });
-//             toast.error("Unknown add error");
-//         }
-//     };
-// };
-//
+            const data = await addUser(user);
+
+            if (!data.data.success) {
+                dispatch({
+                    type: UserActionTypes.ADD_USER_ERROR,
+                    payload: data.data.message,
+                });
+                //toast.error(data.data.message);
+            } else {
+                dispatch({
+                    type: UserActionTypes.ADD_USER_SUCCESS,
+                    payload: data.data.message,
+                });
+
+              //  toast.success(data.data.message);
+            }
+        } catch (e) {
+            dispatch({
+                type: UserActionTypes.SERVER_ERROR,
+                payload: "Unknown error",
+            });
+            toast.error("Unknown add error");
+        }
+    };
+};
+
 
 //
 

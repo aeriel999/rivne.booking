@@ -53,7 +53,7 @@ public class UserController : Controller
 
 		if (validationResult.IsValid)
 		{
-			var result = await _userService.UpdateProfile(model);
+			var result = await _userService.UpdateProfileAsync(model);
 
 			if (result.Success) return Ok(result); 
 			else return BadRequest(result.Message); 
@@ -67,7 +67,7 @@ public class UserController : Controller
 	[HttpGet("getAll")]
 	public async Task<IActionResult> GetAll()
 	{
-		var result = await _userService.GetAll();
+		var result = await _userService.GetAllUsersAsync();
 
 		if (result.Success) return Ok(result);
 		else return BadRequest(result.Message);
@@ -83,7 +83,7 @@ public class UserController : Controller
 
 		if (result.IsValid)
 		{
-			var newUserResult = await _userService.Register(model);
+			var newUserResult = await _userService.RegisterUserAsync(model);
 
 			if (newUserResult.Success) { return Ok(newUserResult); }
 			else { return BadRequest(newUserResult); }
@@ -97,7 +97,7 @@ public class UserController : Controller
 	[HttpPost("deleteUser")]
 	public async Task<IActionResult> DeleteUser([FromBody] string id)
 	{
-		var result = await _userService.Delete(id);
+		var result = await _userService.DeleteUserAsync(id);
 
 		if (result.Success) return Ok(result);
 		else return BadRequest(result.Message);
@@ -106,7 +106,7 @@ public class UserController : Controller
 	[HttpGet("getUser")]
 	public async Task<IActionResult> GetUser(string userID)
 	{
-		var result = await _userService.GetUser(userID);
+		var result = await _userService.GetUserAsync(userID);
 
 		if (result.Success)
 		{
@@ -124,7 +124,7 @@ public class UserController : Controller
 
 		if (result.IsValid)
 		{
-			var editResult = await _userService.Edit(model);
+			var editResult = await _userService.EditUserAsync(model);
 
 			if (editResult.Success)
 			{
@@ -133,6 +133,32 @@ public class UserController : Controller
 			else
 			{
 				return BadRequest(editResult);
+			}
+		}
+		else
+		{
+			return BadRequest(result.Errors[0].ToString());
+		}
+	}
+
+	[HttpPost("addUser")]
+	public async Task<IActionResult> AddUser(AddUserDto model)
+	{
+		var validator = new AddUserValidation();
+
+		var result = validator.Validate(model);
+
+		if (result.IsValid)
+		{
+			var newUserresult = await _userService.CreateUserAsync(model);
+
+			if (newUserresult.Success)
+			{
+				return Ok(newUserresult);
+			}
+			else
+			{
+				return BadRequest(newUserresult);
 			}
 		}
 		else

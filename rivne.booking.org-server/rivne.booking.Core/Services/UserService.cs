@@ -110,7 +110,7 @@ public class UserService
 		}
 	}
 
-	public async Task<ServiceResponse> UpdateProfile(UpdateProfileDto model)
+	public async Task<ServiceResponse> UpdateProfileAsync(UpdateProfileDto model)
 	{
 		var user = await _userManager.FindByIdAsync(model.Id);
 
@@ -166,7 +166,7 @@ public class UserService
 		}
 	}
 
-	public async Task<ServiceResponse> GetAll()
+	public async Task<ServiceResponse> GetAllUsersAsync()
 	{
 		var users = await _userManager.Users.ToListAsync();
 
@@ -207,7 +207,7 @@ public class UserService
 		}
 	}
 
-	public async Task<ServiceResponse> Register(RegisterUserDto model)
+	public async Task<ServiceResponse> RegisterUserAsync(RegisterUserDto model)
 	{
 		var user = new User
 		{
@@ -248,7 +248,7 @@ public class UserService
 		}
 	}
 
-	public async Task<ServiceResponse> Delete(string id)
+	public async Task<ServiceResponse> DeleteUserAsync(string id)
 	{
 		var user = await _userManager.FindByIdAsync(id);
 
@@ -280,7 +280,7 @@ public class UserService
 		}
 	}
 
-	public async Task<ServiceResponse> GetUser(string userID)
+	public async Task<ServiceResponse> GetUserAsync(string userID)
 	{
 		var user = await _userManager.FindByIdAsync(userID);
 
@@ -298,6 +298,13 @@ public class UserService
 
 			mappedUser.Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault()!;
 
+			var roles = _roleManager.Roles.ToList();
+
+			foreach (var role in roles)
+			{
+				mappedUser.Roles.Add(role.Name!);
+			}
+
 			return new ServiceResponse
 			{
 				Success = true,
@@ -307,7 +314,7 @@ public class UserService
 		}
 	}
 
-	public async Task<ServiceResponse> Edit(EditUserDto model)
+	public async Task<ServiceResponse> EditUserAsync(EditUserDto model)
 	{
 		var user = await _userManager.FindByIdAsync(model.Id);
 
@@ -342,6 +349,11 @@ public class UserService
 			user.PhoneNumberConfirmed = false;
 		}
 
+		if (user.LockoutEnabled != model.LockoutEnabled)
+		{
+			user.LockoutEnabled = model.LockoutEnabled;
+		}
+
 		var role = await _userManager.GetRolesAsync(user);
 
 		if (role == null)
@@ -349,13 +361,16 @@ public class UserService
 			return new ServiceResponse
 			{
 				Success = false,
-				Message = "Cant find role of user"
+				Message = "Error in finding of role of user"
 			};
 		}
 
-		await _userManager.RemoveFromRoleAsync(user, role[0]);
+		if (role[0] != model.Role)
+		{
+			await _userManager.RemoveFromRoleAsync(user, role[0]);
 
-		await _userManager.AddToRoleAsync(user, model.Role);
+			await _userManager.AddToRoleAsync(user, model.Role);
+		}
 
 		var result = await _userManager.UpdateAsync(user);
 
@@ -373,6 +388,34 @@ public class UserService
 			{
 				Success = false,
 				Message = "User is not update",
+			};
+		}
+	}
+
+	public async Task<ServiceResponse> CreateUserAsync(AddUserDto model)
+	{
+		var mappedUser = _mapper.Map<AddUserDto, User>(model);
+
+		mappedUser.UserName = model.Email;
+
+		var result = await _userManager.CreateAsync(mappedUser, model.Password);
+		 
+		if (result.Succeeded)
+		{
+			_userManager.AddToRoleAsync(mappedUser, model.Role).Wait();
+
+			return new ServiceResponse
+			{
+				Success = true,
+				Message = "New user created successfully"
+			};
+		}
+		else
+		{
+			return new ServiceResponse
+			{
+				Success = false,
+				Message = "Error in creating"
 			};
 		}
 	}

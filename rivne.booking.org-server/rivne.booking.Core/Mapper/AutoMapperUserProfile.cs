@@ -14,6 +14,7 @@ public class AutoMapperUserProfile : Profile
     {
 		CreateMap<UpdateProfileDto, User>().ReverseMap();
 		CreateMap<EditUserDto, User>().ReverseMap();
+		CreateMap<AddUserDto, User>().ReverseMap();
 
 	}
 }

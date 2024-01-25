@@ -19,7 +19,7 @@ export interface IUser {
   emailConfirmed: boolean,
   phonenumber: string,
   phoneNumberConfirmed: boolean,
-  lockedEnd: boolean,
+  lockoutEnabled: boolean,
   role: string,
   avatar: string,
 }
@@ -29,9 +29,20 @@ export interface IEditUser {
   firstname: string,
   lastname: string,
   email: string,
-  emailConfirmed: boolean,
+ // emailConfirmed: boolean,
   phonenumber: string,
-  phoneNumberConfirmed: boolean,
-  lockedEnd: boolean,
+  //phoneNumberConfirmed: boolean,s
+  lockoutEnabled: boolean,
   role: string,
 }
+
+export interface IAddUser {
+  firstname: string,
+  lastname: string,
+  email: string,
+  phonenumber: string,
+  role: string,
+  password: string,
+  confirmPassword: string,
+}
+

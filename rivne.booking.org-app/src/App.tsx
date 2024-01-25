@@ -7,15 +7,12 @@ import SignUp from './pages/Authentication/SignUp';
 import Loader from './common/Loader';
 import routes from './routes';
 import Users from './pages/users';
-import AddUser from './pages/users/create';
+import AddUserPage from './pages/users/create';
 import Apartments from './pages/apartments';
 import AddApartment from './pages/apartments/create';
 import { useTypedSelector } from './hooks/useTypedSelector.ts';
 import DefaultLayout from './layout/DefaultLayout'
 import EditUserPage from './pages/users/update';
-
-
-
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -42,24 +39,24 @@ console.log("auth", isAuth)
             <Route  element={<DefaultLayout />}>
               <Route path="/dashboard" element={<ECommerce />} />
               <Route path="/dashboard/users" element={<Users />} />
-              <Route path="/dashboard/users/edit" element={<EditUserPage />} />
-              <Route path="/dashboard/adduser" element={<AddUser />} />
+              <Route path="/dashboard/users/edit/:userId" element={<EditUserPage />} />
+              <Route path="/dashboard/adduser" element={<AddUserPage />} />
               <Route path="/dashboard/apartments" element={<Apartments />} />
               <Route path="/dashboard/addapartment" element={<AddApartment />} />
-              {/*{routes.map((routes, index) => {*/}
-              {/*  const { path, component: Component } = routes;*/}
-              {/*  return (*/}
-              {/*    <Route*/}
-              {/*      key={index}*/}
-              {/*      path={path}*/}
-              {/*      element={*/}
-              {/*        <Suspense fallback={<Loader />}>*/}
-              {/*          <Component />*/}
-              {/*        </Suspense>*/}
-              {/*      }*/}
-              {/*    />*/}
-              {/*  );*/}
-              {/*})}*/}
+              {routes.map((routes, index) => {
+                const { path, component: Component } = routes;
+                return (
+                  <Route
+                    key={index}
+                    path={path}
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <Component />
+                      </Suspense>
+                    }
+                  />
+                );
+              })}
             </Route>
             ))
           </>

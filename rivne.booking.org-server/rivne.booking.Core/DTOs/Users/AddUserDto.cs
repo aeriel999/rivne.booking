@@ -5,16 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rivne.booking.Core.DTOs.Users;
-public class UserDto
+public class AddUserDto
 {
-	public string Id { get; set; } = string.Empty;
 	public string FirstName { get; set; } = string.Empty;
 	public string LastName { get; set; } = string.Empty;
-	public bool EmailConfirmed { get; set; }
 	public string Email { get; set; } = string.Empty;
 	public string PhoneNumber { get; set; } = string.Empty;
-	public bool PhoneNumberConfirmed { get; set; }
-	public bool LockoutEnabled { get; set; } 
 	public string Role { get; set; } = string.Empty;
-	public string Avatar { get; set; } = string.Empty;
+	public string Password { get; set; } = string.Empty;
+	public string ConfirmPassword { get; set; } = string.Empty;
 }

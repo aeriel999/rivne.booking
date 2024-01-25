@@ -201,38 +201,21 @@ export async function editUser(user: any) {
   } catch (error: any) {
     return error.response.data.message;
   }
-
 }
 
+export async function addUser(user: any) {
+  try {
+    const data = await http_common.post("/api/User/addUser", user, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    return data;
+  } catch (error: any) {
+    return error.response.data.message;
+  }
+}
 
-
-
-// export async function addUser(user: any) {
-//   const data = await User.addUser(user)
-//     .then((response) => {
-//       return {
-//         response,
-//       };
-//     })
-//     .catch((error) => {
-//       return error.response;
-//     });
-//   return data;
-// }
-//
-// export async function getUser(userId: string) {
-//   const data = await User.getUser(userId)
-//     .then((response) => {
-//       return {
-//         response,
-//       };
-//     })
-//     .catch((error) => {
-//       return error.response;
-//     });
-//
-//   return data;
-// }
 //
 // export async function editUser(user: any) {
 //   const data = await User.editUser(user)
