@@ -166,4 +166,21 @@ public class UserController : Controller
 			return BadRequest(result.Errors[0].ToString());
 		}
 	}
+
+	[HttpPost("addAvatar")]
+	public async Task<IActionResult> AddAvatar(AddAvatarDto model)
+	{
+		string id = User.Claims.First().Value;
+
+		var result = await _userService.AddAvatarAsync(model);
+
+		if (result.Success)
+		{
+			return Ok(result);
+		}
+		else
+		{
+			return BadRequest(result);
+		}
+	}
 }

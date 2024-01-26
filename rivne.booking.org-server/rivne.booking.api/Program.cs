@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using rivne.booking.Infrastructure.Initializers;
+using Microsoft.Extensions.FileProviders;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,8 +45,6 @@ builder.Services.AddAuthentication(options =>
 	jwt.TokenValidationParameters = tokenValidationParemeters;
 	jwt.RequireHttpsMetadata = false;
 });
-
-
 
 // Database context
 builder.Services.AddDbContext(connStr);
@@ -103,6 +102,29 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+/////
+//if (!app.Environment.IsDevelopment())
+//{
+//	app.UseExceptionHandler("/Home/Error");
+//}
+//app.UseStaticFiles();
+
+var dir = Path.Combine(Directory.GetCurrentDirectory(), "images");
+
+if (!Directory.Exists(dir))
+{
+	Directory.CreateDirectory(dir);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(dir),
+	RequestPath = "/images"
+});
+
+
+//////////
 
 app.UseCors(options => options.SetIsOriginAllowed(origin => true).AllowAnyHeader().AllowCredentials().AllowAnyMethod());
 

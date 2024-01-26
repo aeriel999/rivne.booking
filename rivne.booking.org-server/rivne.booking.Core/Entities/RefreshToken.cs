@@ -21,4 +21,5 @@ public class RefreshToken : IEntity
 
 	[ForeignKey(nameof(UserId))]
 	public User User { get; set; }
+	 
 }

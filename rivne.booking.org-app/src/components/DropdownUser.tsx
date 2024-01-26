@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import DefaultAvatar from '../images/user/default-avatar.png';
 import { useTypedSelector } from '../hooks/useTypedSelector.ts';
@@ -12,14 +12,14 @@ const DropdownUser = () => {
 
   const { user } = useTypedSelector((store) => store.UserReducer);
   const { LogOut } = useActions();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   // @ts-ignore
   const BASE_URL: string = import.meta.env.VITE_API_URL as string;
-  const avatar = user.Avatar === '' ? DefaultAvatar : BASE_URL + user.Avatar;
+  const avatar = user.Avatar === '' ? DefaultAvatar : BASE_URL + "/images/avatars/" + user.Avatar;
 
   const OnCkick = () =>{
     LogOut(user.Id);
-    navigate("/dashboard");
+    //navigate("/dashboard");
   }
 
   // close on click outside

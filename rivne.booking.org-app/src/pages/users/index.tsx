@@ -33,7 +33,7 @@ const Users: React.FC = () => {
       phoneNumberConfirmed: user.phoneNumberConfirmed,
       lockoutEnabled: user.lockoutEnabled,
       role: user.role,
-      avatar: user.avatar === null || user.avatar === '' ? DefaultAvatar : BASE_URL + user.avatar
+      avatar: user.avatar === null || user.avatar === '' ? DefaultAvatar : BASE_URL + "/images/avatars/" + user.avatar
 
     })));
 

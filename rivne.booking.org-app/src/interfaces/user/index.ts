@@ -46,3 +46,9 @@ export interface IAddUser {
   confirmPassword: string,
 }
 
+export interface IAvatar {
+  id: string,
+  image: File
+}
+
+

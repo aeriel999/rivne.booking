@@ -1,8 +1,7 @@
 import { UserActionTypes, UserActions } from "../../reducers/userReducers/types.ts";
-//import services
 import {
     login,
-     logout,
+    logout,
     setAccessToken,
     setRefreshToken,
     removeTokens,
@@ -11,10 +10,10 @@ import {
     deleteUser,
     addUser,
     getUser,
-    editUser,
+    editUser, addUserAvatar
 
     // changePassword,
-} from "../../../services/userServices";
+} from '../../../services/userServices';
 import { Dispatch } from "redux";
 import { toast } from "react-toastify";
 import jwtDecode from "jwt-decode";
@@ -262,6 +261,38 @@ export const AddUser = (user: any) => {
                 });
 
               //  toast.success(data.data.message);
+            }
+        } catch (e) {
+            dispatch({
+                type: UserActionTypes.SERVER_ERROR,
+                payload: "Unknown error",
+            });
+            toast.error("Unknown add error");
+        }
+    };
+};
+
+export const AddUserAvatar = (model: any) => {
+    console.log("AddUserAvatar", model)
+    return async (dispatch: Dispatch<UserActions>) => {
+        try {
+            dispatch({ type: UserActionTypes.START_REQUEST });
+
+            const data = await addUserAvatar(model);
+
+            if (!data.data.success) {
+                dispatch({
+                    type: UserActionTypes.ADD_USER_AVATAR_ERROR,
+                    payload: data.data.message,
+                });
+                //toast.error(data.data.message);
+            } else {
+                dispatch({
+                    type: UserActionTypes.ADD_USER_AVATAR_SUCCESS,
+                    payload: data.data.message,
+                });
+
+                //  toast.success(data.data.message);
             }
         } catch (e) {
             dispatch({

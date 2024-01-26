@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using rivne.booking.Infrastructure.Context;
@@ -11,9 +12,11 @@ using rivne.booking.Infrastructure.Context;
 namespace rivne.booking.Infrastructure.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240126124923_Add Apartments table")]
+    partial class AddApartmentstable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,9 +244,6 @@ namespace rivne.booking.Infrastructure.Migrations
                     b.Property<DateTime>("DateOfPost")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("DateOfUpdate")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -252,9 +252,6 @@ namespace rivne.booking.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsBooked")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsPosted")
@@ -290,28 +287,6 @@ namespace rivne.booking.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Apartments");
-                });
-
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Image", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApartmentId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApartmentId");
-
-                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Street", b =>
@@ -459,17 +434,6 @@ namespace rivne.booking.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Image", b =>
-                {
-                    b.HasOne("rivne.booking.Core.Entities.Apartments.Apartment", "Apartment")
-                        .WithMany("Images")
-                        .HasForeignKey("ApartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Apartment");
-                });
-
             modelBuilder.Entity("rivne.booking.Core.Entities.RefreshToken", b =>
                 {
                     b.HasOne("rivne.booking.Core.Entities.Users.User", "User")
@@ -479,11 +443,6 @@ namespace rivne.booking.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Apartment", b =>
-                {
-                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Street", b =>

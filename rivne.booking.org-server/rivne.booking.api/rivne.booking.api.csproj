@@ -32,4 +32,9 @@
     <ProjectReference Include="..\rivne.booking.Infrastructure\rivne.booking.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="images\avatars\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

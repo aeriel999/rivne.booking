@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using rivne.booking.Core.DTOs.Users;
 using rivne.booking.Core.Entities;
 using rivne.booking.Core.Entities.Users;
- 
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats.Webp;
+using Microsoft.IdentityModel.Tokens;
+
 
 namespace rivne.booking.Core.Services;
 public class UserService
@@ -419,4 +424,94 @@ public class UserService
 			};
 		}
 	}
+
+	public async Task<ServiceResponse> AddAvatarAsync(AddAvatarDto model)
+	{
+		var user = await _userManager.FindByIdAsync(model.Id);
+
+		if (user == null)
+		{
+			return new ServiceResponse
+			{
+				Success = false,
+				Message = "User is not found",
+			};
+		}
+
+		// Check if the file is null
+		if (model.Image == null || model.Image.Length == 0)
+		{
+			return new ServiceResponse { Success = false, Message = "Error in avatar loading" };
+		}
+
+		// Define the folder path to save the avatars
+		var uploadFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "avatars");
+
+		// Create the folder if it doesn't exist
+		if (!Directory.Exists(uploadFolderPath))
+		{
+			Directory.CreateDirectory(uploadFolderPath);
+		}
+
+		if (!user.Avatar.IsNullOrEmpty())
+		{
+			var delFilePath = Path.Combine(uploadFolderPath, user.Avatar);
+
+			if (File.Exists(delFilePath)) { File.Delete(delFilePath); }
+		}
+
+		try
+		{
+			// Generate a unique filename for the avatar 
+			var fileName = Path.GetRandomFileName();
+			var webFileName = fileName + ".png";  
+
+			var filePath = Path.Combine(uploadFolderPath, webFileName);
+
+			// Save the avatar file to the server
+			using (var stream = new FileStream(filePath, FileMode.Create))
+			{
+				await model.Image.CopyToAsync(stream);
+			}
+
+			// Process the image if needed (e.g., resizing)
+			using (var image = Image.Load(filePath))
+			{
+				// Resize the image to your desired dimensions
+				image.Mutate(x => x.Resize(new ResizeOptions
+				{
+					Size = new Size(150, 150), // Adjust the dimensions as needed
+					Mode = ResizeMode.Max
+				}));
+
+				//// Save the processed image back to the file
+				//var webpEncoder = new WebpEncoder();
+				//image.Save(filePath, webpEncoder);
+
+				image.Save(filePath);
+			}
+
+			user.Avatar = webFileName;
+
+			var result = await _userManager.UpdateAsync(user);
+
+			if (result.Succeeded)
+			{
+				return new ServiceResponse { Success = true, Message = "Avatar added successfully." };
+			}
+			else
+			{
+				return new ServiceResponse
+				{
+					Success = false,
+					Message = "Avater is not upload",
+				};
+			}
+		}
+		catch (Exception ex)
+		{
+			return new ServiceResponse { Success = false, Message = $"Error adding avatar: {ex.Message}" };
+		}
+	}
+
 }

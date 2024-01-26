@@ -62,25 +62,6 @@ http_common.interceptors.response.use(
   }
 );
 
-// const responseBody: any = (response: any) => response.data;
-
-// const requests = {
-//   get: (url: string) => instance.get(url).then().then(responseBody),
-//   post: (url: string, body?: any) =>
-//     instance.post(url, body).then().then(responseBody),
-// };
-//
-// const User = {
-//   login: (user: any) => requests.post(`/login`, user),
-//   logout: (userId: string) => requests.get(`/logout?userId=` + userId),
-//   getAll: () => requests.get(`/GetAll`),
-//   addUser: (user: any) => requests.post(`/AddUser`, user),
-//   getUser: (userId: string) => requests.get(`/GetUser?userId=` + userId),
-//   editUser: (user: any) => requests.post(`/EditUser`, user),
-//   deleteUser: (userId: string) => requests.post(`/DeleteUser`, userId),
-//   changePassword: (passModel: any) => requests.post(`/ChangePassword`, passModel),
-// };
-
 export async function login(model: ILogin) {
   try {
     const data = await http_common.post("/api/User/login", model, {
@@ -208,6 +189,19 @@ export async function addUser(user: any) {
     const data = await http_common.post("/api/User/addUser", user, {
       headers: {
         "Content-Type": "application/json"
+      }
+    });
+    return data;
+  } catch (error: any) {
+    return error.response.data.message;
+  }
+}
+
+export async function addUserAvatar(model: any) {
+  try {
+    const data = await http_common.post("/api/User/addAvatar", model, {
+      headers: {
+        "Content-Type": "multipart/form-data"
       }
     });
     return data;

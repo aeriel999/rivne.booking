@@ -6,6 +6,7 @@ using rivne.booking.Core.Entities.Users;
 using rivne.booking.Infrastructure.Context;
 using System.Data;
 using System;
+using rivne.booking.Core.Entities.Apartments;
 
 
 namespace rivne.booking.Infrastructure.Initializers;
@@ -69,6 +70,41 @@ public static class ApiUsersInitializer
 			}
 
 			#endregion
+			if (!context.Streets.Any())
+			{
+				var street = new Street
+				{
+					Id = 1,
+					Name = "Soborna",
+				};
+				context.Streets.Add(street);
+				context.SaveChanges();
+			}
+
+			if (!context.Apartments.Any())
+			{
+				var apartment = new Apartment
+				{
+					Id = 1,
+					UserId = "ab4176bd-4aee-4bad-9e39-5b71bdc1d2a3",
+					StreetId = 1,
+					 NumberOfBuilding = 1,
+					  IsPrivateHouse = false,
+					 NumberOfRooms = 1,
+					 Floor = 1,
+					  Area = 25,
+					 Price = 8000,
+					 Description = "Nice",
+					TypeOfBooking = "For mounth",
+					DateOfPost = DateTime.Now.ToUniversalTime(),
+					IsArchived = false,
+					IsPosted = false,
+
+				};
+
+				context.Apartments.Add(apartment);
+				context.SaveChanges();
+			}
 		}
 	}
 }

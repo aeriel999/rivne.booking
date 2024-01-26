@@ -126,6 +126,20 @@ const UserReducer = (state = initialState, action: UserActions): UserState => {
                 loading: false,
                 message: action.payload.message,
             };
+        case UserActionTypes.ADD_USER_AVATAR_SUCCESS:
+
+            return {
+                ...state,
+                loading: false,
+                message: action.payload,
+            };
+
+        case UserActionTypes.ADD_USER_AVATAR_ERROR:
+            return {
+                ...state,
+                loading: false,
+                message: action.payload.message,
+            };
         case UserActionTypes.CHANGE_PASSWORD_SUCCESS:
 
             return {

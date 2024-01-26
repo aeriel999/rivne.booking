@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ECommerce from './pages/Dashboard/ECommerce';
 import SignIn from './pages/Authentication/SignIn';
-import SignUp from './pages/Authentication/SignUp';
+//import SignUp from './pages/Authentication/SignUp';
 import Loader from './common/Loader';
 import routes from './routes';
 import Users from './pages/users';
@@ -62,9 +62,9 @@ console.log("auth", isAuth)
           </>
         )}
 
-        <Route path="/" element={<SignIn />} />
-        <Route path="/dashboard" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="*" element={<SignIn />} />
+        {/*<Route path="/dashboard" element={<SignIn />} />*/}
+        {/*<Route path="/signup" element={<SignUp />} />*/}
       </Routes>
     </>
   );
