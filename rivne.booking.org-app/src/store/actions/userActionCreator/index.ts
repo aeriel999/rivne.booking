@@ -267,7 +267,7 @@ export const AddUser = (user: any) => {
                 type: UserActionTypes.SERVER_ERROR,
                 payload: "Unknown error",
             });
-            toast.error("Unknown add error");
+           // toast.error("Unknown add error");
         }
     };
 };
@@ -299,7 +299,7 @@ export const AddUserAvatar = (model: any) => {
                 type: UserActionTypes.SERVER_ERROR,
                 payload: "Unknown error",
             });
-            toast.error("Unknown add error");
+           // toast.error("Unknown add error");
         }
     };
 };

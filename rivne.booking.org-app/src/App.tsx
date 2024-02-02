@@ -13,6 +13,7 @@ import AddApartment from './pages/apartments/create';
 import { useTypedSelector } from './hooks/useTypedSelector.ts';
 import DefaultLayout from './layout/DefaultLayout'
 import EditUserPage from './pages/users/update';
+import UpdateApartment from './pages/apartments/update';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -43,6 +44,8 @@ console.log("auth", isAuth)
               <Route path="/dashboard/adduser" element={<AddUserPage />} />
               <Route path="/dashboard/apartments" element={<Apartments />} />
               <Route path="/dashboard/addapartment" element={<AddApartment />} />
+              <Route path="/dashboard/apartment/edit/:apartmentId" element={<UpdateApartment />} />
+
               {routes.map((routes, index) => {
                 const { path, component: Component } = routes;
                 return (

@@ -33,33 +33,34 @@ const InputGroup : FC<InputGroupProps> = ({
         {label}
       </label>
       <div className="relative">
-                        <span className="absolute left-4.5 top-4">
+        {/*<span className="absolute left-1 top-4">*/}
+        <span className="absolute top-1/2 left-4 z-30 -translate-y-1/2">
                          {icon}
                         </span>
-      <input
-        type={type}
-        className={classNames("w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black " +
-          "focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary", {
-          "is-invalid": errors || (error && touched)
-        })}
-        id={field}
-        name={field}
-        value={value}
-        onChange={onChange}
-        aria-describedby="emailHelp"
-      />
-      {errors && (
-        <div id="validationServerUsernameFeedback" className="invalid-feedback">
-          {errors.map((err, index) => (
-            <span key={index}>{err}</span>
-          ))}
-        </div>
-      )}
-      {(error && touched) && (
-        <div id="validationServerUsernameFeedback" className="invalid-feedback">
-          <span style={{ color: 'red' }}>{error}</span>
-        </div>
-      )}
+        <input
+          type={type}
+          className={classNames("w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black " +
+            "focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary", {
+            "is-invalid": errors || (error && touched)
+          })}
+          id={field}
+          name={field}
+          value={value}
+          onChange={onChange}
+          aria-describedby="emailHelp"
+        />
+        {errors && (
+          <div id="validationServerUsernameFeedback" className="invalid-feedback">
+            {errors.map((err, index) => (
+              <span key={index}>{err}</span>
+            ))}
+          </div>
+        )}
+        {(error && touched) && (
+          <div id="validationServerUsernameFeedback" className="invalid-feedback">
+            <span style={{ color: 'red' }}>{error}</span>
+          </div>
+        )}
       </div>
     </div>
   );

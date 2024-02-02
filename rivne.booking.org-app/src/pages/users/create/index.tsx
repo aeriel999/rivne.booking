@@ -8,6 +8,7 @@ import { addUserValidationSchema } from '../../../validation/user';
 import InputGroup from '../../../components/InputGroup.tsx';
 import { arrowSVG, emailSVG, passwordSVG, phoneSVG, roleSVG, userSVG } from '../../../images/icon/user.tsx';
 
+
 const AddUserPage: React.FC = () => {
   const navigate = useNavigate();
   const { AddUser } = useActions();
@@ -73,7 +74,7 @@ const AddUserPage: React.FC = () => {
               className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">
-                  Edit Personal Information
+                  Add Personal Information
                 </h3>
               </div>
               <div className="p-7">
