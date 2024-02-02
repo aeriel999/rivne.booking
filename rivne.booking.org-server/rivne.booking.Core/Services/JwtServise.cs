@@ -29,32 +29,32 @@ public class JwtServise : IJwtTokenService
 
 	public async Task Create(RefreshToken token)
 	{
-		await _tokenRepo.Insert(token);
-		await _tokenRepo.Save();
+		await _tokenRepo.InsertAsync(token);
+		await _tokenRepo.SaveAsync();
 	}
 
 	public async Task Delete(RefreshToken token)
 	{
-		await _tokenRepo.Delete(token);
-		await _tokenRepo.Save();
+		await _tokenRepo.DeleteAsync(token);
+		await _tokenRepo.SaveAsync();
 	}
 
 	public async Task<RefreshToken?> Get(string token)
 	{
-		var result = await _tokenRepo.GetListBySpec(new RefreshTokenSpecification.GetRefreshToken(token));
+		var result = await _tokenRepo.GetListBySpecAsync(new RefreshTokenSpecification.GetRefreshToken(token));
 		return result.FirstOrDefault();
 	}
 
 	public async Task<IEnumerable<RefreshToken>> GetAll()
 	{
-		IEnumerable<RefreshToken> result = await _tokenRepo.GetAll();
+		IEnumerable<RefreshToken> result = await _tokenRepo.GetAllAsync();
 		return result;
 	}
 
 	public async Task Update(RefreshToken token)
 	{
-		await _tokenRepo.Update(token);
-		await _tokenRepo.Save();
+		await _tokenRepo.UpdateAsync(token);
+		await _tokenRepo.SaveAsync();
 	}
 
 	public async Task<Tokens> GenerateJwtTokensAsync(User user)
@@ -111,7 +111,7 @@ public class JwtServise : IJwtTokenService
 
 	public async Task<RefreshToken?> GetRefreshToken(string token)
 	{
-		var result = await _tokenRepo.GetListBySpec(new RefreshTokenSpecification.GetRefreshToken(token));
+		var result = await _tokenRepo.GetListBySpecAsync(new RefreshTokenSpecification.GetRefreshToken(token));
 		return (RefreshToken?)result.FirstOrDefault();
 	}
 
@@ -233,7 +233,7 @@ public class JwtServise : IJwtTokenService
 
 	public async Task<IEnumerable<RefreshToken>> GetTokensByUserId(string userId)
 	{
-		IEnumerable<RefreshToken> tokens = await _tokenRepo.GetListBySpec(new RefreshTokenSpecification.GetTokensDyUserId(userId));
+		IEnumerable<RefreshToken> tokens = await _tokenRepo.GetListBySpecAsync(new RefreshTokenSpecification.GetTokensDyUserId(userId));
 
 		return tokens;
 	}

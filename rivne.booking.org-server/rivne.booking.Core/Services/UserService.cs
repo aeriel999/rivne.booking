@@ -265,6 +265,16 @@ public class UserService
 				Message = "User is not found",
 			};
 		}
+
+		if (!user.Avatar.IsNullOrEmpty())
+		{
+			var uploadFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "avatars");
+
+			var delFilePath = Path.Combine(uploadFolderPath, user.Avatar);
+
+			if (File.Exists(delFilePath)) { File.Delete(delFilePath); }
+		}
+
 		var result = await _userManager.DeleteAsync(user);
 
 		if (result.Succeeded)

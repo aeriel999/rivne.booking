@@ -3,35 +3,36 @@ using Ardalis.Specification;
 using Microsoft.EntityFrameworkCore;
 using rivne.booking.Core.Interfaces;
 using rivne.booking.Infrastructure.Context;
- 
+
 
 namespace rivne.booking.Infrastructure.Repository;
-internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity
+internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity 
 {
 	internal ApiDbContext _context;
 	internal DbSet<TEntity> _dbSet;
+	 
 	public Repository(ApiDbContext context)
 	{
 		this._context = context;
 		this._dbSet = context.Set<TEntity>();
 	}
 
-	public async Task<IEnumerable<TEntity>> GetAll()
+	public async Task<IEnumerable<TEntity>> GetAllAsync()
 	{
 		return await _dbSet.ToListAsync();
 	}
 
-	public async Task Insert(TEntity entity)
+	public async Task InsertAsync(TEntity entity)
 	{
 		await _dbSet.AddAsync(entity);
 	}
 
-	public async Task Save()
+	public async Task SaveAsync()
 	{
 		await _context.SaveChangesAsync();
 	}
 
-	public async Task Update(TEntity ententityToUpdate)
+	public async Task UpdateAsync(TEntity ententityToUpdate)
 	{
 		await Task.Run
 			(
@@ -42,20 +43,20 @@ internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class,
 			});
 	}
 	 
-	public async Task<TEntity?> GetById(object id)
+	public async Task<TEntity?> GetByIdAsync(object id)
 	{
 		return await _dbSet.FindAsync(id);
 	}
-	public async Task Delete(object id)
+	public async Task DeleteAsync(object id)
 	{
 		TEntity? entityToDelete = await _dbSet.FindAsync(id);
 		if (entityToDelete != null)
 		{
-			await Delete(entityToDelete);
+			await DeleteAsync(entityToDelete);
 		}
 	}
 
-	public async Task Delete(TEntity entityToDelete)
+	public async Task DeleteAsync(TEntity entityToDelete)
 	{
 		await Task.Run(
 			() =>
@@ -79,10 +80,8 @@ internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class,
 		return evaluator.GetQuery(_dbSet, specification);
 	}
 
-	public async Task<IEnumerable<TEntity>> GetListBySpec(ISpecification<TEntity> specification)
+	public async Task<IEnumerable<TEntity>> GetListBySpecAsync(ISpecification<TEntity> specification)
 	{
 		return await ApplySpecification(specification).ToListAsync();
 	}
-
-	
 }

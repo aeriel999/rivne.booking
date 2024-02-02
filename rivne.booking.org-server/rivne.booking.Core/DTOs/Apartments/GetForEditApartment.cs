@@ -1,10 +1,15 @@
-﻿using rivne.booking.Core.Entities.Users;
-using rivne.booking.Core.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using rivne.booking.Core.Entities.Apartments;
+using rivne.booking.Core.Entities.Users;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace rivne.booking.Core.Entities.Apartments;
-
-public class Apartment : IEntity 
+namespace rivne.booking.Core.DTOs.Apartments;
+public class GetForEditApartment
 {
 	public int Id { get; set; }
 	public int NumberOfBuilding { get; set; }
@@ -13,21 +18,13 @@ public class Apartment : IEntity
 	public int? Floor { get; set; }
 	public double Area { get; set; }
 	public decimal Price { get; set; }
-	public string Description { get; set; }	= String.Empty;
+	public string Description { get; set; } = String.Empty;
 	public string TypeOfBooking { get; set; } = String.Empty;
-	public DateTime DateOfPost { get; set; }
-	public DateTime? DateOfUpdate { get; set; }
 	public bool IsBooked { get; set; } = false;
 	public bool IsArchived { get; set; }
 	public bool IsPosted { get; set; }
-	public int StreetId { get; set; }
+	public string StreetName { get; set; } = string.Empty;
 	public string UserId { get; set; } = string.Empty;
-
-	[ForeignKey(nameof(StreetId))]
-	public Street Street { get; set; }
-	
-	[ForeignKey(nameof(UserId))]
-	public User User { get; set; }
-	public ICollection<Image>? Images { get; set; }
+	public string UserName { get; set; } = string.Empty;
+	public List<string>? Images { get; set; }
 }
-
