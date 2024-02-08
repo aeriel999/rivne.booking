@@ -9,8 +9,9 @@ public static class ServiceExtensions
 	public static void AddCoreServices(this IServiceCollection services)
 	{
 		services.AddTransient<UserService>();
-		services.AddTransient<JwtServise>(); 
+		//services.AddTransient<JwtServise>(); 
 		services.AddTransient<ApartmentService>();
+		//services.AddTransient<EmailService>();
 
 	}
 

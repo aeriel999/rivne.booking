@@ -1,4 +1,4 @@
-﻿using rivne.booking.Core.Entities.Users;
+﻿ 
 using rivne.booking.Core.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,8 +26,8 @@ public class Apartment : IEntity
 	[ForeignKey(nameof(StreetId))]
 	public Street Street { get; set; }
 	
-	[ForeignKey(nameof(UserId))]
-	public User User { get; set; }
+	//[ForeignKey(nameof(UserId))]
+	//public User User { get; set; }
 	public ICollection<Image>? Images { get; set; }
 }
 

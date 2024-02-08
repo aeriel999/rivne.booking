@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using rivne.booking.Core.Entities.Users;
 using rivne.booking.Core.Interfaces;
 using rivne.booking.Infrastructure.Context;
 using rivne.booking.Infrastructure.Repository;
- 
+using Rivne.Booking.Domain.Users;
+
 
 namespace rivne.booking.Infrastructure;
 public static class ServiceExtensions

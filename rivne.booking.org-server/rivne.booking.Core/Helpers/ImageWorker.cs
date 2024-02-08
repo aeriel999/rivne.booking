@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using rivne.booking.Core.Entities.Users;
 using rivne.booking.Core.Services;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
@@ -23,13 +21,14 @@ public static class ImageWorker
 
 		try
 		{
-			// Generate a unique filename for the avatar 
+			// Generate a unique filename for the image 
 			var fileName = Path.GetRandomFileName();
+
 			var webFileName = fileName + ".png";
 
 			var filePath = Path.Combine(uploadFolderPath, webFileName);
 
-			// Save the avatar file to the server
+			// Save the image file to the server
 			using (var stream = new FileStream(filePath, FileMode.Create))
 			{
 				await image.CopyToAsync(stream);
@@ -41,7 +40,7 @@ public static class ImageWorker
 				// Resize the image to your desired dimensions
 				i.Mutate(x => x.Resize(new ResizeOptions
 				{
-					Size = new Size(1200, 1200), // Adjust the dimensions as needed
+					Size = new Size(1200, 1200), 
 					Mode = ResizeMode.Max
 				}));
 
@@ -95,5 +94,37 @@ public static class ImageWorker
 			};
 		} 
 	}
-	
+
+
+	//////////////////////
+	///
+	public static async Task SaveAvatarAsync(IFormFile file, string dirSaveImage)
+	{
+		using (MemoryStream ms = new MemoryStream())
+		{
+			await file.CopyToAsync(ms);
+
+			using (var image = Image.Load(ms.ToArray()))
+			{
+				image.Mutate(x =>
+				{
+					x.Resize(new ResizeOptions
+					{
+						Size = new Size(1200, 1200),
+						Mode = ResizeMode.Max
+					});
+				});
+
+				using (var stream = System.IO.File.Create(dirSaveImage))
+				{
+					await image.SaveAsync(stream, new WebpEncoder());
+				}
+			}
+		 
+		}
+	}
+
+	 
+
+
 }

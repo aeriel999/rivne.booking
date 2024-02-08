@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using rivne.booking.Core.Entities.Users;
 using rivne.booking.Infrastructure.Context;
-using System.Data;
-using System;
 using rivne.booking.Core.Entities.Apartments;
+using Rivne.Booking.Domain.Users;
 
 
 namespace rivne.booking.Infrastructure.Initializers;

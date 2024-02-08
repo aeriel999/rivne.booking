@@ -1,8 +1,16 @@
 import axios from "axios";
-import http_common from '../../htt_common.ts';
+
 import { ILogin, IProfileUser } from '../../interfaces/user';
 
-http_common.interceptors.request.use(
+import {APP_ENV} from "../../env";
+
+const instance = axios.create({
+  baseURL: APP_ENV.BASE_URL + "/api/User",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+instance.interceptors.request.use(
   (config: any) => {
     const token = getAccessToken();
     if (token) {
@@ -15,7 +23,7 @@ http_common.interceptors.request.use(
   }
 );
 
-http_common.interceptors.response.use(
+instance.interceptors.response.use(
   (res) => {
     return res;
   },
@@ -38,9 +46,9 @@ http_common.interceptors.response.use(
           const { accessToken, refreshToken } = rs.data;
           setRefreshToken(refreshToken);
           setAccessToken(accessToken);
-          http_common.defaults.headers.common["Authorization"] =
+          instance.defaults.headers.common["Authorization"] =
             "Bearer " + accessToken;
-          return http_common(originalConfig);
+          return instance(originalConfig);
         } catch (_error: any) {
           if (_error.response && _error.response.data) {
             return Promise.reject(_error.response.data);
@@ -64,7 +72,7 @@ http_common.interceptors.response.use(
 
 export async function login(model: ILogin) {
   try {
-    const data = await http_common.post("/api/User/login", model, {
+    const data = await instance.post("/login", model, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -75,10 +83,14 @@ export async function login(model: ILogin) {
   }
 }
 
-function refreshAccessToken() {
-  return http_common.post("/RefreshToken", {
+export function refreshAccessToken() {
+
+  return instance.post("/RefreshToken", {
     token: getAccessToken(),
-    refreshToken: getRefreshToken(),
+    refreshToken: getRefreshToken()}, {
+    headers: {
+      "Content-Type": "application/json"
+    }
   });
 }
 
@@ -102,7 +114,7 @@ export function getRefreshToken(): null | string {
 
 export async function logout(userId: string) {
   try {
-    const data = await http_common.get("/api/User/logout?userId=" + userId, {
+    const data = await instance.get("/logout?userId=" + userId, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -118,9 +130,29 @@ export function removeTokens() {
   window.localStorage.removeItem("refreshToken");
 }
 
+export async function confirmEmail(userId : string, token: string) {
+  try {
+    const data = await instance.get("/confirmemail", {
+      params: {
+        userId: userId,
+        token: token,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return data;
+  } catch (error : any) {
+    return error.response.data.message;
+  }
+}
+
+
+
+
 export async function updateUserProfile(model: IProfileUser) {
   try {
-    const data = await http_common.post("/api/User/updateProfile", model, {
+    const data = await instance.post("/updateProfile", model, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -133,7 +165,7 @@ export async function updateUserProfile(model: IProfileUser) {
 
 export async function getAll() {
   try {
-    const data = await http_common.get("/api/User/getAll", {
+    const data = await instance.get("/getAll", {
       headers: {
         "Content-Type": "application/json"
       }
@@ -146,7 +178,7 @@ export async function getAll() {
 
 export async function deleteUser(userId: string) {
   try {
-    const data = await http_common.post("/api/User/deleteUser", userId, {
+    const data = await instance.post("/deleteUser", userId, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -160,7 +192,7 @@ export async function deleteUser(userId: string) {
 
 export async function getUser(userId: string) {
   try {
-    const data = await http_common.get("/api/User/getUser?userId=" + userId,{
+    const data = await instance.get("/getUser?userId=" + userId,{
       headers: {
         "Content-Type": "application/json"
       }
@@ -173,7 +205,7 @@ export async function getUser(userId: string) {
 
 export async function editUser(user: any) {
   try {
-    const data = await http_common.post("/api/User/editUser", user, {
+    const data = await instance.post("/editUser", user, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -186,7 +218,7 @@ export async function editUser(user: any) {
 
 export async function addUser(user: any) {
   try {
-    const data = await http_common.post("/api/User/addUser", user, {
+    const data = await instance.post("/addUser", user, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -197,9 +229,10 @@ export async function addUser(user: any) {
   }
 }
 
-export async function addUserAvatar(model: any) {
+export async function addUserAvatar(file: any) {
   try {
-    const data = await http_common.post("/api/User/addAvatar", model, {
+
+    const data = await instance.post("/addAvatar", file, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
@@ -210,35 +243,7 @@ export async function addUserAvatar(model: any) {
   }
 }
 
-//
-// export async function editUser(user: any) {
-//   const data = await User.editUser(user)
-//     .then((response) => {
-//       return {
-//         response,
-//       };
-//     })
-//     .catch((error) => {
-//       return error.response;
-//     });
-//
-//   return data;
-// }
-//
-// export async function deleteUser(userId: string) {
-//   const data = await User.deleteUser(userId)
-//     .then((response) => {
-//       return {
-//         response,
-//       };
-//     })
-//     .catch((error) => {
-//       return error.response;
-//     });
-//
-//   return data;
-// }
-//
+
 // export async function changePassword(passModel: any) {
 //   const data = await User.changePassword(passModel)
 //     .then((response) => {

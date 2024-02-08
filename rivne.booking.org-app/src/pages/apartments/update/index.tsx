@@ -170,6 +170,7 @@ const UpdateApartment : React.FC = () => {
         imagesForDelete: imagesForDelete
       };
 
+      console.log("model: IEditApartment", model)
       await EditApartment(model);
 
       navigate('/dashboard/apartments');
@@ -280,7 +281,7 @@ console.log("urls", urls)
                   <div className="mb-5.5">
                     <InputGroup
                       label="Or input Street Name if you didn`n find it in List"
-                      field="newsStreetName"
+                      field="streetName"
                       onChange={handleChange}
                       error={errors.streetName}
                       touched={touched.streetName}
@@ -327,6 +328,7 @@ console.log("urls", urls)
                         field="numberOfRooms"
                         onChange={handleChange}
                         type="number"
+
                         value={values.numberOfRooms}
                         error={errors.numberOfRooms}
                         touched={touched.numberOfRooms}
@@ -341,6 +343,7 @@ console.log("urls", urls)
                         field="numberOfBuilding"
                         onChange={handleChange}
                         type="number"
+
                         value={values.numberOfBuilding}
                         error={errors.numberOfBuilding}
                         touched={touched.numberOfBuilding}
@@ -356,6 +359,7 @@ console.log("urls", urls)
                         field="floor"
                         onChange={handleChange}
                         type="number"
+
                         value={values.floor}
                         error={errors.floor}
                         touched={touched.floor}
@@ -370,6 +374,7 @@ console.log("urls", urls)
                         field="area"
                         onChange={handleChange}
                         type="number"
+
                         value={values.area}
                         error={errors.area}
                         touched={touched.area}
@@ -412,6 +417,7 @@ console.log("urls", urls)
                       field="price"
                       onChange={handleChange}
                       type="number"
+
                       value={values.price}
                       error={errors.price}
                       touched={touched.price}

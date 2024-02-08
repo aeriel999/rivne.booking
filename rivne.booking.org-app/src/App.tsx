@@ -14,6 +14,7 @@ import { useTypedSelector } from './hooks/useTypedSelector.ts';
 import DefaultLayout from './layout/DefaultLayout'
 import EditUserPage from './pages/users/update';
 import UpdateApartment from './pages/apartments/update';
+import EmailConfirmation from './pages/users/auth/confirmEmail.tsx';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -66,6 +67,7 @@ console.log("auth", isAuth)
         )}
 
         <Route path="*" element={<SignIn />} />
+        <Route path="/confirmemail/:userId/:token" element={<EmailConfirmation/>} />
         {/*<Route path="/dashboard" element={<SignIn />} />*/}
         {/*<Route path="/signup" element={<SignUp />} />*/}
       </Routes>

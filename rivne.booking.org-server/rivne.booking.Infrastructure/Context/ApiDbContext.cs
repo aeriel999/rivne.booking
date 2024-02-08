@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using rivne.booking.Core.Entities.Users;
 using rivne.booking.Core.Entities;
 using rivne.booking.Core.Entities.Apartments;
- 
+using Rivne.Booking.Domain.Users;
+using RefreshToken = Rivne.Booking.Domain.Users.RefreshToken;
+
 
 namespace rivne.booking.Infrastructure.Context;
 public class ApiDbContext : IdentityDbContext
@@ -29,11 +30,11 @@ public class ApiDbContext : IdentityDbContext
 			.HasForeignKey(c => c.StreetId)
 			.OnDelete(DeleteBehavior.Cascade);
 
-		builder.Entity<Apartment>()
-			.HasOne(c => c.User)
-			.WithMany(r => r.Apartments)
-			.HasForeignKey(c => c.UserId)
-			.OnDelete(DeleteBehavior.Cascade);
+		//builder.Entity<Apartment>()
+		//	.HasOne(c => c.User)
+		//	.WithMany(r => r.Apartments)
+		//	.HasForeignKey(c => c.UserId)
+		//	.OnDelete(DeleteBehavior.Cascade);
 
 		builder.Entity<Image>()
 			.HasOne(c => c.Apartment)

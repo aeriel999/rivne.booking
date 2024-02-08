@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+ 
 using rivne.booking.Core.DTOs.Apartments;
 using rivne.booking.Core.Entities.Apartments;
-using rivne.booking.Core.Entities.Specification;
-using rivne.booking.Core.Entities.Users;
+ 
 using rivne.booking.Core.Helpers;
 using rivne.booking.Core.Interfaces;
 using static rivne.booking.Core.Entities.Specification.Apartaments;
@@ -103,23 +101,23 @@ public class ApartmentService
 	{
 		try
 		{
-			var specification = new GetApartmentWithDetails(id);
+			//var specification = new GetApartmentWithDetails(id);
 
-			var apartmentWithDetails = await _apartmentRepository.GetItemBySpec(specification);
+			//var apartmentWithDetails = await _apartmentRepository.GetItemBySpec(specification);
 
-			foreach (var image in apartmentWithDetails.Images)
-			{
-				var imgDelResult = await ImageWorker.DeleteImageAsync(image.Name);
+			//foreach (var image in apartmentWithDetails.Images)
+			//{
+			//	var imgDelResult = await ImageWorker.DeleteImageAsync(image.Name);
 
-				if (!imgDelResult.Success)
-				{
-					return new ServiceResponse
-					{
-						Success = false,
-						Message = imgDelResult.Message,
-					};
-				}
-			}
+			//	if (!imgDelResult.Success)
+			//	{
+			//		return new ServiceResponse
+			//		{
+			//			Success = false,
+			//			Message = imgDelResult.Message,
+			//		};
+			//	}
+			//}
 
 			await _apartmentRepository.DeleteAsync(id);
 			await _apartmentRepository.SaveAsync();
@@ -143,21 +141,21 @@ public class ApartmentService
     {
 		try
 		{
-			var specification = new GetAllApartmentsWithDetails();
+			//var specification = new GetAllApartmentsWithDetails();
 
-			var apartmentsWithDetails = await _apartmentRepository.GetListBySpecAsync(specification);
+			//var apartmentsWithDetails = await _apartmentRepository.GetListBySpecAsync(specification);
 
-			var mappedList = new List<ListApartmentDto>();
+			//var mappedList = new List<ListApartmentDto>();
 
-			foreach (var a in apartmentsWithDetails)
-			{
-				mappedList.Add(_mapper.Map<ListApartmentDto>(a));
-			}
+			//foreach (var a in apartmentsWithDetails)
+			//{
+			//	mappedList.Add(_mapper.Map<ListApartmentDto>(a));
+			//}
 
 			return new ServiceResponse
 			{
 				Success = true,
-				PayLoad = mappedList,
+				//PayLoad = mappedList,
 				Message = "Appartments are loaded",
 			};
 		}
@@ -197,16 +195,16 @@ public class ApartmentService
 	{
 		try
 		{
-			var specification = new GetApartmentWithDetails(apartmentId);
+		//	var specification = new GetApartmentWithDetails(apartmentId);
 
-			var apartmentWithDetails = await _apartmentRepository.GetItemBySpec(specification);
+		//	var apartmentWithDetails = await _apartmentRepository.GetItemBySpec(specification);
 
-			var mappedApartment = _mapper.Map<GetForEditApartment>(apartmentWithDetails);
+		//	var mappedApartment = _mapper.Map<GetForEditApartment>(apartmentWithDetails);
  
 			return new ServiceResponse
 			{
 				Success = true,
-				PayLoad = mappedApartment,
+				//PayLoad = mappedApartment,
 				Message = "Appartment are loaded",
 			};
 		}
@@ -262,7 +260,10 @@ public class ApartmentService
 					apartment.StreetId = newStreet.Id;
 				}
 			}
-			 
+			else
+			{
+				apartment.StreetId = model.StreetId;
+			}
 
 			await _apartmentRepository.UpdateAsync(apartment);
 

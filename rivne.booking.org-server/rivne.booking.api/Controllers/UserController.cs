@@ -4,6 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using rivne.booking.Core.DTOs.Users;
 using rivne.booking.Core.Services;
 using rivne.booking.Core.Validations;
+using rivne.booking.Core.DTOs;
+using rivne.booking.api.Contracts;
+using Rivne.Booking.Application.Users.Commands;
+using ErrorOr;
+using rivne.booking.Infrastructure.Repository;
+using rivne.booking.api.Validation;
+using System.Web;
+using Microsoft.AspNetCore.Http.Extensions;
+
 
 namespace rivne.booking.api.Controllers;
 
@@ -13,10 +22,14 @@ namespace rivne.booking.api.Controllers;
 public class UserController : Controller
 {
 	private readonly UserService _userService;
+	private readonly UserRepository _userRepository;
+	private readonly IHttpContextAccessor _httpContext;
 
-	public UserController(UserService userService)
+	public UserController(UserService userService, UserRepository userRepository, IHttpContextAccessor httpContext)
 	{
 		_userService = userService;
+		_userRepository = userRepository;
+		_httpContext = httpContext;
 	}
 
 	[AllowAnonymous]
@@ -42,6 +55,25 @@ public class UserController : Controller
 		}
 
 		return BadRequest(result);
+	}
+
+	[AllowAnonymous]
+	[HttpPost("RefreshToken")]
+	public async Task<IActionResult> RefreshTokenAsync([FromBody] TokenRequestDto model)
+	{
+		var validator = new TokenRequestValidation();
+		var validation = validator.Validate(model);
+
+		if (validation.IsValid) 
+		{
+			//var res = await _userService.RefreshTokenAsync(model);
+
+			//if (!res.Success) { return Ok(res); }
+			//else { return BadRequest(res.Message); }
+
+			return Ok();
+		}
+		else { return BadRequest(validation.Errors[0].ToString()); }
 	}
 
 	[HttpPost("updateProfile")]
@@ -75,23 +107,51 @@ public class UserController : Controller
 
 	[AllowAnonymous]
 	[HttpPost("register")]
-	public async Task<IActionResult> Register(RegisterUserDto model)
+	public async Task<IActionResult> Register(RegisterUserRequest request)
 	{
-		var validator = new RegisterUserValidation();
+		var validator = new RegisterUserRequestValidation();
 
-		var result = validator.Validate(model);
+		var registerUserRequestValidation = await validator.ValidateAsync(request);
 
-		if (result.IsValid)
+		if (!registerUserRequestValidation.IsValid) 
 		{
-			var newUserResult = await _userService.RegisterUserAsync(model);
+			return BadRequest(registerUserRequestValidation.Errors[0]);
+		}
 
-			if (newUserResult.Success) { return Ok(newUserResult); }
-			else { return BadRequest(newUserResult); }
-		}
-		else
+		var command = new RegisterUserCommand {
+			Email = request.Email,
+			Password = request.Password,
+			ConfirmPassword = request.ConfirmPassword,
+			BaseUrl = _httpContext.HttpContext.Request.Host.Value
+	};
+
+		var commandHandler = new RegisterUserCommandHandler(_userRepository);
+
+		var errorOrUser = await commandHandler.Execute(command);
+
+		if (errorOrUser.IsError)
 		{
-			return BadRequest(result.Errors[0].ToString());
+			return BadRequest();
 		}
+
+		return Ok();
+		
+	}
+
+	[AllowAnonymous]
+	[HttpGet("ConfirmEmail")]
+	public async Task<IActionResult> ConfirmEmailAsync(string userId, string token)
+	{
+		if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+			return NotFound();
+
+		var result = await _userService.ConfirmEmailAsync(userId, token);
+
+		if (result.Success)
+		{
+			return Ok(result);
+		}
+		return BadRequest(result);
 	}
 
 	[HttpPost("deleteUser")]
@@ -168,11 +228,11 @@ public class UserController : Controller
 	}
 
 	[HttpPost("addAvatar")]
-	public async Task<IActionResult> AddAvatar(AddAvatarDto model)
+	public async Task<IActionResult> AddAvatar([FromForm]IFormFile file)
 	{
-		string id = User.Claims.First().Value;
+		string userId = User.Claims.First().Value;
 
-		var result = await _userService.AddAvatarAsync(model);
+		var result = await _userService.AddAvatarAsync(file,userId);
 
 		if (result.Success)
 		{

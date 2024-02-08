@@ -3,16 +3,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using rivne.booking.Core.DTOs;
 using rivne.booking.Core.Entities;
-using rivne.booking.Core.Entities.Users;
-using rivne.booking.Core.Interfaces;
+ 
+using Rivne.Booking.Application.Interfaces;
+using Rivne.Booking.Domain.Users;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
- 
 using static rivne.booking.Core.Entities.Specification.RefreshTokenSpecifications;
 
 namespace rivne.booking.Core.Services;
-public class JwtServise : IJwtTokenService
+public class JwtServise
 {
 	private readonly IConfiguration _configuration;
 	private readonly IRepository<RefreshToken> _tokenRepo;
@@ -122,10 +122,12 @@ public class JwtServise : IJwtTokenService
 		try
 		{
 			_validationParameters.ValidateLifetime = false;
-			var principal = jwtTokenHandler.ValidateToken(tokenRequest.Token, _validationParameters, out var validatedToken);
+			var principal = jwtTokenHandler.ValidateToken(tokenRequest.Token, _validationParameters,
+				out var validatedToken);
 			if (validatedToken is JwtSecurityToken jwtSecurityToken)
 			{
-				var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase);
+				var result = jwtSecurityToken.Header.Alg
+					.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase);
 				if (result == false)
 				{
 					return null;
@@ -134,7 +136,8 @@ public class JwtServise : IJwtTokenService
 
 			var utcExpireDate = long.Parse(principal.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
 			var expDate = UnixTimeStampToDateTime(utcExpireDate);
-			if (expDate > DateTime.UtcNow)
+
+			if (expDate < DateTime.UtcNow)
 			{
 				return new ServiceResponse
 				{
@@ -237,11 +240,12 @@ public class JwtServise : IJwtTokenService
 
 		return tokens;
 	}
+	 
 }
 
 public class Tokens
 {
 	public string Token { get; set; }
-	public RefreshToken RefreshToken { get; set; }
+	public Rivne.Booking.Domain.Users.RefreshToken RefreshToken { get; set; }
 
 }

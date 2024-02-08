@@ -15,13 +15,13 @@ public class AutoMapperApartmentProfile : Profile
 		 
 
 		CreateMap<Apartment, GetForEditApartment>()
-				.ForMember(x => x.UserName, opt => opt.MapFrom(x => x.User.FirstName + " " + x.User.LastName))
+				//.ForMember(x => x.UserName, opt => opt.MapFrom(x => x.User.FirstName + " " + x.User.LastName))
 				.ForMember(x => x.StreetName, opt => opt.MapFrom(x => x.Street.Name))
 				.ForMember(x => x.Images, opt => opt.MapFrom(x => x.Images.Select(y => y.Name)));
 				//.ForMember(x => x.Images, opt => opt.Ignore());
 
 		CreateMap<Apartment, ListApartmentDto>()
-				.ForMember(x => x.UserName, opt => opt.MapFrom(x => x.User.FirstName + " " + x.User.LastName))
+				//.ForMember(x => x.UserName, opt => opt.MapFrom(x => x.User.FirstName + " " + x.User.LastName))
 				.ForMember(x => x.Address, opt => opt.MapFrom(x => x.Street.Name + " street, " + x.NumberOfBuilding))
 				.ForMember(x => x.Image, opt => opt.MapFrom(x => x.Images.FirstOrDefault().Name))
 				.ForMember(x => x.DateOfPost, opt => opt.MapFrom(x => x.DateOfPost.ToShortDateString()))

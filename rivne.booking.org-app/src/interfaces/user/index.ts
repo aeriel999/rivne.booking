@@ -31,7 +31,7 @@ export interface IEditUser {
   email: string,
  // emailConfirmed: boolean,
   phonenumber: string,
-  //phoneNumberConfirmed: boolean,s
+  //phoneNumberConfirmed: boolean,
   lockoutEnabled: boolean,
   role: string,
 }

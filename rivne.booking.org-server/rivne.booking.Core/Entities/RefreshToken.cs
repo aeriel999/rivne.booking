@@ -1,11 +1,5 @@
-﻿using rivne.booking.Core.Entities.Users;
-using rivne.booking.Core.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using rivne.booking.Core.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace rivne.booking.Core.Entities;
 public class RefreshToken : IEntity
@@ -19,7 +13,7 @@ public class RefreshToken : IEntity
 	public DateTime AddedDate { get; set; }
 	public DateTime ExpireDate { get; set; }
 
-	[ForeignKey(nameof(UserId))]
-	public User User { get; set; }
+	//[ForeignKey(nameof(UserId))]
+	//public User User { get; set; }
 	 
 }

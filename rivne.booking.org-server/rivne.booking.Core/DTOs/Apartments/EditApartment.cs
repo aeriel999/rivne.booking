@@ -1,13 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using rivne.booking.Core.Entities.Apartments;
-using rivne.booking.Core.Entities.Users;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+ 
 
 namespace rivne.booking.Core.DTOs.Apartments;
 public class EditApartment

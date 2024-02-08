@@ -1,16 +1,14 @@
 import Breadcrumb from '../components/Breadcrumb';
 import DefaultAvatar from '../images/user/default-avatar.png';
 import { useTypedSelector } from '../hooks/useTypedSelector.ts';
-import { IAvatar, IProfileUser } from '../interfaces/user';
+import {  IProfileUser } from '../interfaces/user';
 import { useActions } from '../hooks/useActions.ts';
 import { useNavigate } from 'react-router-dom';
 import {   useFormik } from 'formik';
 import { profileValidationSchema } from '../validation/user';
 import InputGroup from '../components/InputGroup.tsx';
 import { emailSVG, phoneSVG, uploadArrowSVG, userSVG } from '../images/icon/user.tsx';
-import { useState } from 'react';
-//mport { File } from 'typescript';
-
+import {  useState } from 'react';
 
 const Settings = () => {
   const { user } = useTypedSelector((store) => store.UserReducer);
@@ -19,7 +17,7 @@ const Settings = () => {
   const avatar = user.Avatar === '' ? DefaultAvatar : BASE_URL + "/images/avatars/" + user.Avatar;
 
   console.log(avatar);
-  const { UpdateUserProfile, AddUserAvatar, LogOut } = useActions();
+  const { UpdateUserProfile, AddUserAvatar } = useActions();
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -41,11 +39,11 @@ const Settings = () => {
         id: user.Id
       };
 
-      await UpdateUserProfile(model);
+       await UpdateUserProfile(model);
 
-      // Navigate to the desired page after successful form submission
-      LogOut(user.Id);
-    } catch (error) {
+      navigate('/dashboard/users');
+
+     } catch (error) {
       console.error('Form submission failed:', error);
     }
   };
@@ -84,17 +82,17 @@ const OnClickCancel = ()=>{
 
     console.log("selectedFile", selectedFile)
 
-    const model: IAvatar = {
-      id: user.Id,
-      image: selectedFile
-    }
-
-    console.log("model", model)
+    // const model: IAvatar = {
+    //   id: user.Id,
+    //   image: selectedFile
+    // }
+    //
+    // console.log("model", model)
 
    try{
-     await AddUserAvatar(model);
+     await AddUserAvatar(selectedFile);
 
-     LogOut(user.Id);
+     navigate('/dashboard/users');
    } catch (error) {
      console.error('Form submission failed:', error);
    }

@@ -32,6 +32,8 @@ export enum UserActionTypes {
   ADD_USER_AVATAR_ERROR = 'ADD_USER_AVATAR_ERROR',
   CHANGE_PASSWORD_SUCCESS = 'CHANGE_PASSWORD_SUCCESS',
   CHANGE_PASSWORD_ERROR = 'CHANGE_PASSWORD_ERROR',
+  CONFIRM_EMAIL_SUCCESS = "CONFIRM_EMAIL_SUCCESS",
+  CONFIRM_EMAIL_ERROR = 'CONFIRM_EMAIL_ERROR'
 }
 
 interface StartRequestAction {
@@ -147,6 +149,15 @@ interface ChangePasswordErrorAction {
   payload: any;
 }
 
+interface ConfirmEmailSuccessAction{
+  type: UserActionTypes.CONFIRM_EMAIL_SUCCESS;
+  payload: any;
+}
+
+interface ConfirmEmailErrorAction{
+  type: UserActionTypes.CONFIRM_EMAIL_ERROR;
+  payload: any;
+}
 export type UserActions =
   | StartRequestAction
   | FinishRequestAction
@@ -170,4 +181,6 @@ export type UserActions =
   | UpdateUserProfileSuccessAction
   | UpdateUserProfileErrorAction
   | AddUserAvatarSuccessAction
-  | AddUserAvatarErrorAction;
+  |AddUserAvatarErrorAction
+  |ConfirmEmailSuccessAction
+  |ConfirmEmailErrorAction;

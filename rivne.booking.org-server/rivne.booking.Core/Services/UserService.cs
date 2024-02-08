@@ -7,9 +7,11 @@ using rivne.booking.Core.DTOs.Users;
 using rivne.booking.Core.Entities;
 using rivne.booking.Core.Entities.Users;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Formats.Webp;
 using Microsoft.IdentityModel.Tokens;
+using rivne.booking.Core.Helpers;
+using rivne.booking.Core.DTOs;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 
 namespace rivne.booking.Core.Services;
@@ -18,12 +20,13 @@ public class UserService
 	private readonly UserManager<User> _userManager;
 	private readonly RoleManager<IdentityRole> _roleManager;
 	private readonly SignInManager<User> _signInManager;
+	private readonly EmailService _emailService;
 	private readonly IConfiguration _config;
 	private readonly JwtServise _jwtService;
 	private readonly IMapper _mapper;
 
 	public UserService( RoleManager<IdentityRole> roleManager, IConfiguration config,
-		UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, JwtServise jwtService)
+		UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, JwtServise jwtService, EmailService emailService)
 	{
 		_userManager = userManager;
 		_signInManager = signInManager;
@@ -31,6 +34,7 @@ public class UserService
 		_roleManager = roleManager;
 		_mapper = mapper;
 		_jwtService = jwtService;
+		_emailService = emailService;	
 	}
 
 	public async Task<ServiceResponse> LoginUserAsync(LoginUserDto model)
@@ -51,6 +55,7 @@ public class UserService
 		if (signinResult.Succeeded)
 		{
 			var tokens = await _jwtService.GenerateJwtTokensAsync(user);
+
 			return new ServiceResponse
 			{
 				AccessToken = tokens.Token,
@@ -115,6 +120,10 @@ public class UserService
 		}
 	}
 
+	public async Task<ServiceResponse> RefreshTokenAsync(TokenRequestDto model)
+	{
+		return await _jwtService.VerifyTokenAsync(model);
+	}
 	public async Task<ServiceResponse> UpdateProfileAsync(UpdateProfileDto model)
 	{
 		var user = await _userManager.FindByIdAsync(model.Id);
@@ -157,7 +166,7 @@ public class UserService
 			return new ServiceResponse
 			{
 				Success = true,
-				//PayLoad = user,
+				PayLoad = user,
 				Message = "User is update"
 			};
 		}
@@ -189,7 +198,7 @@ public class UserService
 		foreach (var user in users)
 		{
 			var newUser = _mapper.Map<User, UserDto>(user);
-			newUser.Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+			newUser.Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault()!;
 			mappedUsers.Add(newUser);
 		}
 
@@ -212,45 +221,37 @@ public class UserService
 		}
 	}
 
-	public async Task<ServiceResponse> RegisterUserAsync(RegisterUserDto model)
+	public async Task<ServiceResponse> ConfirmEmailAsync(string userId, string token)
 	{
-		var user = new User
-		{
-			Email = model.Email,
-			UserName = model.Email,
-		}; 
+		var user = await _userManager.FindByIdAsync(userId);
 
-		var result = await _userManager.CreateAsync(user, model.Password);
-
-		if (result.Succeeded)
-		{
-			var roleResult = _userManager.AddToRoleAsync(user, "User").Result;
-
-			if (roleResult.Succeeded)
-			{
-				return new ServiceResponse
-				{
-					Success = true,
-					Message = "User is created"
-				};
-			}
-			else
-			{
-				return new ServiceResponse
-				{
-					Success = false,
-					Message = "User is not created",
-				};
-			}
-		}
-		else
+		if (user == null)
 		{
 			return new ServiceResponse
 			{
 				Success = false,
-				Message = "User is not created",
+				Message = "Not found"
 			};
 		}
+
+		var decoderToken = WebEncoders.Base64UrlDecode(token);
+		var normalToken = Encoding.UTF8.GetString(decoderToken);
+		var result = await _userManager.ConfirmEmailAsync(user, normalToken);
+
+		if (result.Succeeded)
+		{
+			return new ServiceResponse
+			{
+				Success = true,
+				Message = "Confirmed"
+			};
+		}
+		return new ServiceResponse
+		{
+			Success = false,
+			Message = "Not Confirmed",
+			Errors = result.Errors.Select(e => e.Description)
+		};
 	}
 
 	public async Task<ServiceResponse> DeleteUserAsync(string id)
@@ -409,24 +410,36 @@ public class UserService
 
 	public async Task<ServiceResponse> CreateUserAsync(AddUserDto model)
 	{
-		var mappedUser = _mapper.Map<AddUserDto, User>(model);
-
-		mappedUser.UserName = model.Email;
-
-		var result = await _userManager.CreateAsync(mappedUser, model.Password);
-		 
-		if (result.Succeeded)
+		try
 		{
-			_userManager.AddToRoleAsync(mappedUser, model.Role).Wait();
+			var mappedUser = _mapper.Map<User>(model);
 
-			return new ServiceResponse
+			mappedUser.UserName = model.Email;
+
+			var result = await _userManager.CreateAsync(mappedUser, model.Password);
+
+			if (result.Succeeded)
 			{
-				Success = true,
-				Message = "New user created successfully"
-			};
+				await _userManager.AddToRoleAsync(mappedUser, model.Role);
+
+				return new ServiceResponse
+				{
+					Success = true,
+					Message = "New user created successfully"
+				};
+			}
+			else
+			{
+				return new ServiceResponse
+				{
+					Success = false,
+					Message = "Error in creating"
+				};
+			}
 		}
-		else
+		catch (Exception ex)
 		{
+			Console.WriteLine(ex.Message);
 			return new ServiceResponse
 			{
 				Success = false,
@@ -435,9 +448,9 @@ public class UserService
 		}
 	}
 
-	public async Task<ServiceResponse> AddAvatarAsync(AddAvatarDto model)
+	public async Task<ServiceResponse> AddAvatarAsync(IFormFile file, string userId)
 	{
-		var user = await _userManager.FindByIdAsync(model.Id);
+		var user = await _userManager.FindByIdAsync(userId);
 
 		if (user == null)
 		{
@@ -449,59 +462,38 @@ public class UserService
 		}
 
 		// Check if the file is null
-		if (model.Image == null || model.Image.Length == 0)
+		if (file == null || file.Length == 0)
 		{
 			return new ServiceResponse { Success = false, Message = "Error in avatar loading" };
 		}
 
-		// Define the folder path to save the avatars
-		var uploadFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "avatars");
-
-		// Create the folder if it doesn't exist
-		if (!Directory.Exists(uploadFolderPath))
-		{
-			Directory.CreateDirectory(uploadFolderPath);
-		}
-
-		if (!user.Avatar.IsNullOrEmpty())
-		{
-			var delFilePath = Path.Combine(uploadFolderPath, user.Avatar);
-
-			if (File.Exists(delFilePath)) { File.Delete(delFilePath); }
-		}
-
 		try
 		{
-			// Generate a unique filename for the avatar 
-			var fileName = Path.GetRandomFileName();
-			var webFileName = fileName + ".png";  
+			string imageName = Path.GetRandomFileName() + ".webp";
 
-			var filePath = Path.Combine(uploadFolderPath, webFileName);
+			// Define the folder path to save the avatars
+			var uploadFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "images", "avatars");
 
-			// Save the avatar file to the server
-			using (var stream = new FileStream(filePath, FileMode.Create))
+			// Create the folder if it doesn't exist
+			if (!Directory.Exists(uploadFolderPath))
 			{
-				await model.Image.CopyToAsync(stream);
+				Directory.CreateDirectory(uploadFolderPath);
 			}
 
-			// Process the image if needed (e.g., resizing)
-			using (var image = Image.Load(filePath))
+			//Delete existing file
+			if (!user.Avatar.IsNullOrEmpty())
 			{
-				// Resize the image to your desired dimensions
-				image.Mutate(x => x.Resize(new ResizeOptions
-				{
-					Size = new Size(150, 150), // Adjust the dimensions as needed
-					Mode = ResizeMode.Max
-				}));
+				var delFilePath = Path.Combine(uploadFolderPath, user.Avatar);
 
-				//// Save the processed image back to the file
-				//var webpEncoder = new WebpEncoder();
-				//image.Save(filePath, webpEncoder);
-
-				image.Save(filePath);
+				if (File.Exists(delFilePath))
+					File.Delete(delFilePath);
 			}
 
-			user.Avatar = webFileName;
+			string dirSaveImage = Path.Combine(uploadFolderPath, imageName);
+
+			await ImageWorker.SaveAvatarAsync(file, dirSaveImage);
+
+			user.Avatar = imageName;
 
 			var result = await _userManager.UpdateAsync(user);
 

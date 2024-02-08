@@ -1,4 +1,4 @@
-import { UserState, UserActions, UserActionTypes } from "./types";
+import { UserActions, UserActionTypes, UserState } from './types';
 
 const initialState: UserState = {
     user: {},
@@ -50,7 +50,7 @@ const UserReducer = (state = initialState, action: UserActions): UserState => {
 
                 ...state,
                 loading: false,
-                user: action.payload,
+                message: action.payload,
             };
         case UserActionTypes.UPDATE_USER_PROFILE_ERROR:
             return {
@@ -149,6 +149,20 @@ const UserReducer = (state = initialState, action: UserActions): UserState => {
             };
 
         case UserActionTypes.CHANGE_PASSWORD_ERROR:
+            return {
+                ...state,
+                loading: false,
+                message: action.payload.message,
+            };
+        case  UserActionTypes.CONFIRM_EMAIL_SUCCESS:
+            return {
+                ...state,
+                isAuth: true,
+                loading: false,
+                user: action.payload.decodedToken,
+                message: action.payload.message,
+            };
+        case UserActionTypes.CONFIRM_EMAIL_ERROR:
             return {
                 ...state,
                 loading: false,
