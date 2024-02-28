@@ -1,246 +1,176 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using rivne.booking.Core.DTOs.Users;
-using rivne.booking.Core.Services;
-using rivne.booking.Core.Validations;
-using rivne.booking.Core.DTOs;
-using rivne.booking.api.Contracts;
-using Rivne.Booking.Application.Users.Commands;
-using ErrorOr;
-using rivne.booking.Infrastructure.Repository;
-using rivne.booking.api.Validation;
-using System.Web;
-using Microsoft.AspNetCore.Http.Extensions;
-
-
-namespace rivne.booking.api.Controllers;
+﻿namespace rivne.booking.api.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/[controller]")]
 [ApiController]
-public class UserController : Controller
+public class UserController(ISender mediatr, IHttpContextAccessor httpContext, IMapper mapper) : Controller
 {
-	private readonly UserService _userService;
-	private readonly UserRepository _userRepository;
-	private readonly IHttpContextAccessor _httpContext;
-
-	public UserController(UserService userService, UserRepository userRepository, IHttpContextAccessor httpContext)
-	{
-		_userService = userService;
-		_userRepository = userRepository;
-		_httpContext = httpContext;
-	}
-
-	[AllowAnonymous]
-	[HttpPost("login")]
-	public async Task<IActionResult> LoginUserAsync([FromBody] LoginUserDto model)
-	{
-		var result = await _userService.LoginUserAsync(model);
-
-		if(result.Success)
-			return Ok(result);
-		else
-			return BadRequest(result.Message);
-	}
-
-	[HttpGet("logout")]
-	public async Task<IActionResult> LogoutUserAsync(string userID)
-	{
-		var result = await _userService.LogoutUserAsync(userID);
-
-		if (result.Success)
-		{
-			return Ok(result);
-		}
-
-		return BadRequest(result);
-	}
-
-	[AllowAnonymous]
-	[HttpPost("RefreshToken")]
-	public async Task<IActionResult> RefreshTokenAsync([FromBody] TokenRequestDto model)
-	{
-		var validator = new TokenRequestValidation();
-		var validation = validator.Validate(model);
-
-		if (validation.IsValid) 
-		{
-			//var res = await _userService.RefreshTokenAsync(model);
-
-			//if (!res.Success) { return Ok(res); }
-			//else { return BadRequest(res.Message); }
-
-			return Ok();
-		}
-		else { return BadRequest(validation.Errors[0].ToString()); }
-	}
-
-	[HttpPost("updateProfile")]
-	public async Task<IActionResult> ProfileUpdate(UpdateProfileDto model)
-	{
-		var validator = new UpdateProfileValidation();
-
-		var validationResult = await validator.ValidateAsync(model);
-
-		if (validationResult.IsValid)
-		{
-			var result = await _userService.UpdateProfileAsync(model);
-
-			if (result.Success) return Ok(result); 
-			else return BadRequest(result.Message); 
-		}
-		else
-		{
-			return BadRequest(validationResult.Errors);
-		}
-	}
- 
-	[HttpGet("getAll")]
-	public async Task<IActionResult> GetAll()
-	{
-		var result = await _userService.GetAllUsersAsync();
-
-		if (result.Success) return Ok(result);
-		else return BadRequest(result.Message);
-	}
-
+	//ToDo ???? Maybe make Authentication Controller
 	[AllowAnonymous]
 	[HttpPost("register")]
-	public async Task<IActionResult> Register(RegisterUserRequest request)
-	{
-		var validator = new RegisterUserRequestValidation();
+	public async Task<IActionResult> RegisterUserAsync(RegisterUserRequest request)
+	{ 
+		//ToDo ??? Is it wright
+		var baseUrl = httpContext.HttpContext!.Request.Host.Value;
 
-		var registerUserRequestValidation = await validator.ValidateAsync(request);
+		var authResult = await mediatr.Send(mapper.Map<RegisterUserCommand>((request, baseUrl)));
 
-		if (!registerUserRequestValidation.IsValid) 
-		{
-			return BadRequest(registerUserRequestValidation.Errors[0]);
-		}
-
-		var command = new RegisterUserCommand {
-			Email = request.Email,
-			Password = request.Password,
-			ConfirmPassword = request.ConfirmPassword,
-			BaseUrl = _httpContext.HttpContext.Request.Host.Value
-	};
-
-		var commandHandler = new RegisterUserCommandHandler(_userRepository);
-
-		var errorOrUser = await commandHandler.Execute(command);
-
-		if (errorOrUser.IsError)
-		{
-			return BadRequest();
-		}
-
-		return Ok();
-		
+		//ToDo ??? Maybe make override of controller for extend of retern result
+		return authResult.Match(
+			authResult => Ok(authResult),
+			errors => Problem(errors[0].ToString()));
 	}
 
 	[AllowAnonymous]
 	[HttpGet("ConfirmEmail")]
-	public async Task<IActionResult> ConfirmEmailAsync(string userId, string token)
+	public async Task<IActionResult> ConfirmEmailAsync([FromQuery] ConfirmEmailRequest request)
 	{
-		if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
-			return NotFound();
+		//ToDo ???? How to make redirect to frontend
+		var confirmEmailResult = await mediatr.Send(mapper.Map<ConfirmEmailQuery>(request));
 
-		var result = await _userService.ConfirmEmailAsync(userId, token);
-
-		if (result.Success)
-		{
-			return Ok(result);
-		}
-		return BadRequest(result);
+		return confirmEmailResult.Match(
+			authResult => Ok(confirmEmailResult),
+			errors => Problem(errors[0].ToString()));
 	}
 
-	[HttpPost("deleteUser")]
-	public async Task<IActionResult> DeleteUser([FromBody] string id)
+	[AllowAnonymous]
+	[HttpPost("login")]
+	public async Task<IActionResult> LoginUserAsync([FromBody] LoginUserRequest request)
 	{
-		var result = await _userService.DeleteUserAsync(id);
+		var loginResult = await mediatr.Send(mapper.Map<LoginUserQuery>(request));
 
-		if (result.Success) return Ok(result);
-		else return BadRequest(result.Message);
+		return loginResult.Match(
+			loginResult => Ok(mapper.Map<LoginUserResponse>(loginResult)),
+			errors => Problem(errors[0].ToString()));
+	}
+
+	[HttpGet("logout")]
+	public async Task<IActionResult> LogoutUserAsync()
+	{
+		//ToDo validate userId
+		//Global ErrorHandling
+		string userId = User.Claims.First(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+		var logOutResult = await mediatr.Send(new LogoutUserQuery(userId));
+
+		return logOutResult.Match(
+			logOutResult => Ok(logOutResult),
+			errors => Problem(errors[0].ToString()));
+	}
+
+	[AllowAnonymous]
+	[HttpPost("RefreshToken")]
+	public async Task<IActionResult> RefreshToken([FromBody] TokenRefreshRequest request)
+	{
+		var refreshTokenResult = await mediatr.Send(mapper.Map<TokenRefreshCommand>(request));
+
+		return refreshTokenResult.Match(
+			refreshTokenResult => Ok(mapper.Map<TokenRefreshResponse>(refreshTokenResult)),
+			errors => Problem(errors[0].ToString()));
+	}
+
+	[AllowAnonymous]
+	[HttpPost("ForgotPassword")]
+	public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
+	{
+		var forgotPasswordResult = await mediatr.Send(mapper.Map<ForgotPasswordQuery>(request));
+
+		return forgotPasswordResult.Match(
+			forgotPasswordResult => Ok(forgotPasswordResult),
+			errors => Problem(errors[0].ToString()));
+	}
+
+	[HttpGet("getAll")]
+	//ToDo Make pagination
+	public async Task<IActionResult> GetAllUserAsync()
+	{
+		var getAllUsersResult = await mediatr.Send(new GetAllUsersQuery());
+
+		return getAllUsersResult.Match(
+		   getAllUsersResult => Ok(mapper.Map<List<GetUserResponse>>(getAllUsersResult)),
+		   errors => Problem(errors[0].ToString()));
+	}
+
+	 
+	[HttpPost("updateProfile")]
+	public async Task<IActionResult> UpdateUserProfileAsync(UpdateUserProfileRequest request)
+	{
+		string userId = User.Claims.First(u => u.Type == ClaimTypes.NameIdentifier).Value;
+
+		var command = mapper.Map<UpdateUserProfileCommand>((request, userId));
+
+		var updateUserProfileResult = await mediatr.Send(command);
+
+		return updateUserProfileResult.Match(
+			refreshTokenResult => Ok(updateUserProfileResult.Value),
+			errors => Problem(errors[0].ToString()));
+	}
+ 
+	[HttpPost("deleteUser")]
+	public async Task<IActionResult> DeleteUserAsync([FromBody] DeleteUserRequest request)
+	{
+		var command = mapper.Map<DeleteUserCommand>(request);
+
+		var deleteUserResult = await mediatr.Send(command);
+
+		return deleteUserResult.Match(
+			refreshTokenResult => Ok(deleteUserResult),
+			errors => Problem(errors[0].ToString()));
 	}
 
 	[HttpGet("getUser")]
-	public async Task<IActionResult> GetUser(string userID)
+	public async Task<IActionResult> GetUserAsync(string userId)
 	{
-		var result = await _userService.GetUserAsync(userID);
+		
+		var command = new GetUserQuery(userId);
 
-		if (result.Success)
-		{
-			return Ok(result);
-		}
-		return BadRequest(result);
+		var getUserResult = await mediatr.Send(command);
+
+		return getUserResult.Match(
+			refreshTokenResult => Ok(mapper.Map<GetUserResponse>(getUserResult.Value)),
+			errors => Problem(errors[0].ToString()));
 	}
 
 	[HttpPost("editUser")]
-	public async Task<IActionResult> EditUser(EditUserDto model)
+	public async Task<IActionResult> EditUserAsync(EditUserRequest request)
 	{
-		var validator = new EditUserValidation();
 
-		var result = validator.Validate(model);
+		//Avatar email confirm
+		var command = mapper.Map<EditUserCommand>(request);
 
-		if (result.IsValid)
-		{
-			var editResult = await _userService.EditUserAsync(model);
+		var editUserResult = await mediatr.Send(command);
 
-			if (editResult.Success)
-			{
-				return Ok(editResult);
-			}
-			else
-			{
-				return BadRequest(editResult);
-			}
-		}
-		else
-		{
-			return BadRequest(result.Errors[0].ToString());
-		}
+		return editUserResult.Match(
+			refreshTokenResult => Ok(editUserResult),
+			errors => Problem(errors[0].ToString()));
 	}
 
 	[HttpPost("addUser")]
-	public async Task<IActionResult> AddUser(AddUserDto model)
+	public async Task<IActionResult> AddUserAsync(CreateUserRequest model)
 	{
-		var validator = new AddUserValidation();
+		var command = mapper.Map<CreateUserCommand>(model);
 
-		var result = validator.Validate(model);
+		var addUserResult = await mediatr.Send(command);
 
-		if (result.IsValid)
-		{
-			var newUserresult = await _userService.CreateUserAsync(model);
-
-			if (newUserresult.Success)
-			{
-				return Ok(newUserresult);
-			}
-			else
-			{
-				return BadRequest(newUserresult);
-			}
-		}
-		else
-		{
-			return BadRequest(result.Errors[0].ToString());
-		}
+		return addUserResult.Match(
+			refreshTokenResult => Ok(addUserResult),
+			errors => Problem(errors[0].ToString()));
 	}
 
 	[HttpPost("addAvatar")]
-	public async Task<IActionResult> AddAvatar([FromForm]IFormFile file)
+	public async Task<IActionResult> AddAvatarAsync([FromForm] AddAvatarRequest request)
 	{
 		string userId = User.Claims.First().Value;
 
-		var result = await _userService.AddAvatarAsync(file,userId);
+		//ToDo Find mapping variant
 
-		if (result.Success)
-		{
-			return Ok(result);
-		}
-		else
-		{
-			return BadRequest(result);
-		}
+		var command = new AddAvatarCommand(userId, request.File);
+
+		var addAvatarResult = await mediatr.Send(command);
+
+		return addAvatarResult.Match(
+			refreshTokenResult => Ok(addAvatarResult),
+			errors => Problem(errors[0].ToString()));
 	}
 }
+

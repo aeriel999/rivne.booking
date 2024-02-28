@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using rivne.booking.Infrastructure.Context;
+using rivne.booking.Infrastructure.Common.Persistence;
 
 #nullable disable
 
@@ -227,13 +227,16 @@ namespace rivne.booking.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Apartment", b =>
+            modelBuilder.Entity("Rivne.Booking.Domain.Apartments.Apartment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("text");
 
                     b.Property<double>("Area")
                         .HasColumnType("double precision");
@@ -283,16 +286,20 @@ namespace rivne.booking.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("StreetId");
+                    b.HasIndex("AppUserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("StreetId");
 
                     b.ToTable("Apartments");
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Image", b =>
+            modelBuilder.Entity("Rivne.Booking.Domain.Apartments.Image", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -314,7 +321,7 @@ namespace rivne.booking.Infrastructure.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Street", b =>
+            modelBuilder.Entity("Rivne.Booking.Domain.Apartments.Street", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -331,7 +338,7 @@ namespace rivne.booking.Infrastructure.Migrations
                     b.ToTable("Streets");
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.RefreshToken", b =>
+            modelBuilder.Entity("Rivne.Booking.Domain.Users.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -365,28 +372,23 @@ namespace rivne.booking.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.Users.User", b =>
+            modelBuilder.Entity("rivne.booking.Infrastructure.Common.Identity.AppUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.Property<string>("Avatar")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasDiscriminator().HasValue("User");
+                    b.HasDiscriminator().HasValue("AppUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -440,28 +442,24 @@ namespace rivne.booking.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Apartment", b =>
+            modelBuilder.Entity("Rivne.Booking.Domain.Apartments.Apartment", b =>
                 {
-                    b.HasOne("rivne.booking.Core.Entities.Apartments.Street", "Street")
+                    b.HasOne("rivne.booking.Infrastructure.Common.Identity.AppUser", null)
+                        .WithMany("Apartments")
+                        .HasForeignKey("AppUserId");
+
+                    b.HasOne("Rivne.Booking.Domain.Apartments.Street", "Street")
                         .WithMany("Apartments")
                         .HasForeignKey("StreetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("rivne.booking.Core.Entities.Users.User", "User")
-                        .WithMany("Apartments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired();
 
                     b.Navigation("Street");
-
-                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Image", b =>
+            modelBuilder.Entity("Rivne.Booking.Domain.Apartments.Image", b =>
                 {
-                    b.HasOne("rivne.booking.Core.Entities.Apartments.Apartment", "Apartment")
+                    b.HasOne("Rivne.Booking.Domain.Apartments.Apartment", "Apartment")
                         .WithMany("Images")
                         .HasForeignKey("ApartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -470,28 +468,17 @@ namespace rivne.booking.Infrastructure.Migrations
                     b.Navigation("Apartment");
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.RefreshToken", b =>
-                {
-                    b.HasOne("rivne.booking.Core.Entities.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Apartment", b =>
+            modelBuilder.Entity("Rivne.Booking.Domain.Apartments.Apartment", b =>
                 {
                     b.Navigation("Images");
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.Apartments.Street", b =>
+            modelBuilder.Entity("Rivne.Booking.Domain.Apartments.Street", b =>
                 {
                     b.Navigation("Apartments");
                 });
 
-            modelBuilder.Entity("rivne.booking.Core.Entities.Users.User", b =>
+            modelBuilder.Entity("rivne.booking.Infrastructure.Common.Identity.AppUser", b =>
                 {
                     b.Navigation("Apartments");
                 });

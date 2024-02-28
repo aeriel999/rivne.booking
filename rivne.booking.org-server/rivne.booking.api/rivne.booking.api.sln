@@ -5,20 +5,14 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rivne.booking.api", "rivne.booking.api.csproj", "{90972DF2-708C-461B-BEB9-35FA0E2DD8DB}"
 	ProjectSection(ProjectDependencies) = postProject
-		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C} = {910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}
 		{B7CB07C7-8132-4F77-86D3-2987594CC8AA} = {B7CB07C7-8132-4F77-86D3-2987594CC8AA}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rivne.booking.Core", "..\rivne.booking.Core\rivne.booking.Core.csproj", "{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rivne.booking.Infrastructure", "..\rivne.booking.Infrastructure\rivne.booking.Infrastructure.csproj", "{B7CB07C7-8132-4F77-86D3-2987594CC8AA}"
-	ProjectSection(ProjectDependencies) = postProject
-		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C} = {910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}
-	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rivne.Booking.Application", "..\Rivne.Booking.Application\Rivne.Booking.Application.csproj", "{01F9349F-0D39-4126-80A7-90416C37DC47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rivne.Booking.Application", "..\Rivne.Booking.Application\Rivne.Booking.Application.csproj", "{01F9349F-0D39-4126-80A7-90416C37DC47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rivne.Booking.Domain", "..\Rivne.Booking.Domain\Rivne.Booking.Domain.csproj", "{81545AA5-EA92-41FC-80F0-825C55F815B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rivne.Booking.Domain", "..\Rivne.Booking.Domain\Rivne.Booking.Domain.csproj", "{81545AA5-EA92-41FC-80F0-825C55F815B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,10 +24,6 @@ Global
 		{90972DF2-708C-461B-BEB9-35FA0E2DD8DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90972DF2-708C-461B-BEB9-35FA0E2DD8DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90972DF2-708C-461B-BEB9-35FA0E2DD8DB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{910BEE71-55F3-4AF3-AE65-17C8EAF6B43C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B7CB07C7-8132-4F77-86D3-2987594CC8AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B7CB07C7-8132-4F77-86D3-2987594CC8AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7CB07C7-8132-4F77-86D3-2987594CC8AA}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -6,14 +6,14 @@ using Rivne.Booking.Application.Interfaces;
 
 namespace rivne.booking.Infrastructure.Services;
 
-public class EmailService(IConfiguration configuration) : IEmailService
+public class EmailService(IConfiguration _configuration) : IEmailService
 {
 	public async Task SendEmailAsync(string toEmail, string subject, string body)
 	{
-		string fromEmail = configuration["EmailSettings:User"];
-		string SMTP = configuration["EmailSettings:SMTP"];
-		int port = int.Parse(configuration["EmailSettings:port"]);
-		string password = configuration["EmailSettings:Password"];
+		string fromEmail = _configuration["EmailSettings:User"];
+		string SMTP = _configuration["EmailSettings:SMTP"];
+		int port = int.Parse(_configuration["EmailSettings:port"]);
+		string password = _configuration["EmailSettings:Password"];
 
 		var email = new MimeMessage();
 		email.From.Add(MailboxAddress.Parse(fromEmail));

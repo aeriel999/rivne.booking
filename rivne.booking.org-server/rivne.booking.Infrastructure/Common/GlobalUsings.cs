@@ -1,0 +1,12 @@
+﻿global using ErrorOr;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.IdentityModel.Tokens;
+global using rivne.booking.Infrastructure.Common.Identity;
+global using Rivne.Booking.Application.Interfaces;
+global using Rivne.Booking.Domain.Users;
+global using Microsoft.AspNetCore.WebUtilities;
+global using System.Text;
+global using Microsoft.Extensions.Configuration;
+global using System.IdentityModel.Tokens.Jwt;
+global using System.Security.Claims;

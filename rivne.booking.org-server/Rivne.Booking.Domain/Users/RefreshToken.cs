@@ -12,9 +12,5 @@ public class RefreshToken
 	public bool IsRevoked { get; set; }
 	public DateTime AddedDate { get; set; }
 	public DateTime ExpireDate { get; set; }
-
-	//TODO Move to infrastructure
-	[ForeignKey(nameof(UserId))]
-	public User User { get; set; }
-
+ 
 }

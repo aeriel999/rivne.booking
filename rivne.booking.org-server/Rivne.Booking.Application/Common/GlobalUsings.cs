@@ -1,0 +1,9 @@
+﻿global using ErrorOr;
+global using MediatR;
+global using Rivne.Booking.Domain.Users;
+global using Rivne.Booking.Application.Interfaces;
+global using FluentValidation;
+global using Microsoft.Extensions.DependencyInjection;
+global using Rivne.Booking.Application.Common.Behaviors;
+global using Rivne.Booking.Application.Common.Mapping;
+global using System.Reflection;
